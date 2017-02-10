@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source ${HOME}/.cache/wal/colors.sh
+
+width="500"
+height="22"
+font="misc ohsnap:size=7"
+gaps="$(bspc query -T -m focused | jq .windowGap)"
+
+resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
+monitor_width="${resolution/x*}"
+offset_x="$(( (monitor_width / 2) - (width / 2) ))"
+offset_y="$(( "${gaps}" / 2))"
+
+dmenu_run -q -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color4" -sb "$color4" -sf "$color0" 2>&1

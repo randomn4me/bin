@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source ${HOME}/.cache/wal/colors.sh
+
+width="300"
+height="22"
+font="misc ohsnap:size=7"
+gaps="$(bspc query -T -m focused | jq .windowGap)"
+
+resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
+monitor_width="${resolution/x*}"
+offset_x="$(( (monitor_width / 2) - (width / 2) ))"
+offset_y="$(( "${gaps}" / 2))"
+
+res=$(echo -e "reboot\nlogout\nshutdown" | dmenu -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color4" -sb "$color4" -sf "$color0" 2>&1)
+ 
+if [ $res = "logout" ]; then
+    ownlogout
+fi
+if [ $res = "reboot" ]; then
+    systemctl reboot
+fi
+if [ $res = "shutdown" ]; then
+    systemctl poweroff
+fi
+exit 0

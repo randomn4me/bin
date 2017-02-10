@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+source "${HOME}/.cache/wal/colors.sh"
+
+set-bar() {
+	pkill bar
+	bar "${color0}" "${color4}" 2> /dev/null &
+}
+
+notify-wal() {
+	walpath=$(cat ${HOME}/.cache/wal/wal | sed "s/\..*$//")
+	notify "Changed theme. Using wal \"$(basename -a ${walpath})\""
+}
+
+set-bspwm-colors() {
+	bspc config focused_border_color "${color4}"
+	bspc config active_border_color "${color4}"
+}
+
+set-scss() {
+	sassc --style expanded "${HOME}/src/html/startpage/style.scss" > "${HOME}/src/html/startpage/style.css"
+}
+
+main() {
+	set-bar
+	notify-wal
+	set-bspwm-colors
+	set-scss
+}
+
+main > /dev/null 2>&1

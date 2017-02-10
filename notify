@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# sends first arg as notification
+
+source ${HOME}/.cache/wal/colors.sh
+
+width="300"
+height="22"
+font="misc ohsnap:size=7"
+gaps="$(bspc query -T -m focused | jq .windowGap)"
+tsleep="10s"
+maxmsg="40"
+
+resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
+monitor_width="${resolution/x*}"
+offset="$(( (monitor_width / 2) - (width / 2) ))"
+geometry="${width}x${height}+${offset}+$(( "${gaps}" / 2))"
+
+print_msg() {
+	[[ "${#1}" > "${maxmsg}" ]] && \
+		printf "%s\n" "%{c}${1:0:$(( ${maxmsg} - 2))}.." || \
+		printf "%s\n" "%{c}${1}"
+}
+
+( print_msg "$1"; sleep "${tsleep}" ) |\
+	
+lemonbar -d -g "$geometry" -f "$font" -B "${color0}" -F "${color4}" -n "bar" &
