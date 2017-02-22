@@ -1,0 +1,12 @@
+#!/bin/sh
+# LAunch MAil Services
+
+MAILDIR="${HOME}/var/mail/Inbox/new"
+SLEEPTIME="${1:-60}s"
+
+wendy -m 128 -f "${MAILDIR}" notimail &
+
+while :; do
+	mbsync -qa &
+	sleep "$SLEEPTIME"
+done &

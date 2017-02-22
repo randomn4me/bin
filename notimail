@@ -1,0 +1,15 @@
+#!/bin/sh
+
+MAILDIR="${1:-${HOME}/var/mail/Inbox/new}"
+
+grepnr() {
+	echo "$(ls "$MAILDIR" | wc -l)"
+}
+
+createstr() {
+	NR="$(grepnr)"
+	test "$NR" = "1" && echo "You have a new mail" ||\
+		echo "You have $NR new mails"
+}
+
+notify "$(createstr)"
