@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if ! [ $(id -u) = 0 ]; then
+  echo "this script must be run as root"
+  exit 1
+fi
+
+PID="/run/uni-vpn.pid"
+USER="$(su - phil -c "pass tu-id")"
+PASS="$(su - phil -c "pass tu-darmstadt/$USER")"
+
+case "$1" in
+	up|start)
+		if [ -f "${PID}" ]; then
+			echo "vpn is already connected"
+			exit 1
+		fi
+		echo "${PASS}" | openconnect --background --pid-file="${PID}" --quiet vpn.hrz.tu-darmstadt.de --authgroup=campus --user="${USER}" --passwd-on-stdin
+		echo "vpn up"
+		;;
+	down|stop)
+		if [ ! -f "${PID}" ]; then
+			echo "vpn not connected"
+			exit 1
+		fi
+		kill -TERM $(cat ${PID})
+		rm ${PID}
+		echo "vpn disconnected"
+		;;
+	*)
+		echo "usage: $(basename $0) <start|stop>"
+		exit 1
+		;;
+esac
+exit 0
