@@ -1,0 +1,54 @@
+#!/bin/bash
+FILE="${HOME}/.todo"
+
+usage() {
+	echo "$(basename $0) : [-h] [-a todo] [-d line-nr]"
+	exit 0
+}
+
+add() {
+	echo "$1" >> "${FILE}"
+	echo "todo added"
+	exit 0
+}
+
+delete() {
+	test -n "$1" || exit 1
+	sed -i "$1d" ${FILE}
+	echo "todo deleted"
+	exit 0
+}
+
+show() {
+	echo ""
+	echo -e "       ██                 ██         "
+	echo -e "      ░██                ░██         "
+	echo -e "     ██████  ██████      ░██  ██████ "
+	echo -e "    ░░░██░  ██░░░░██  ██████ ██░░░░██"
+	echo -e "      ░██  ░██   ░██ ██░░░██░██   ░██"
+	echo -e "      ░██  ░██   ░██░██  ░██░██   ░██"
+	echo -e "      ░░██ ░░██████ ░░██████░░██████ "
+	echo -e "       ░░   ░░░░░░   ░░░░░░  ░░░░░░  "
+	echo ""
+	echo -e "     ████████████████████████████████"
+  echo    "    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ "
+	echo ""
+	test -f "${FILE}" && nl "${FILE}"
+	echo ""
+	exit 0
+}
+
+main() {
+	while getopts "sha:d:" opt; do
+		case "$opt" in
+			"s")	show ;;
+			"h")	usage ;;
+			"a")	add "$OPTARG" ;;
+			"d")	delete "$OPTARG" ;;
+			"?")	usage ;;
+		esac
+	done
+	show
+}
+
+main "$@"
