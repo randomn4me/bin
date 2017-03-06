@@ -23,4 +23,4 @@ print_msg() {
 
 ( print_msg "$1"; sleep "${tsleep}" ) |\
 	
-lemonbar -d -g "$geometry" -f "$font" -B "${color0}" -F "${color4}" -n "bar" &
+lemonbar -d -g "$geometry" -f "$font" -B "${color0}" -F "${color3}" -n "bar" &

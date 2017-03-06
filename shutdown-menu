@@ -12,7 +12,7 @@ monitor_width="${resolution/x*}"
 offset_x="$(( (monitor_width / 2) - (width / 2) ))"
 offset_y="$(( "${gaps}" / 2))"
 
-res=$(echo -e "reboot\nlogout\nshutdown" | dmenu -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color4" -sb "$color4" -sf "$color0" 2>&1)
+res=$(echo -e "reboot\nlogout\nshutdown" | dmenu -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color3" -sb "$color3" -sf "$color0" 2>&1)
  
 if [ $res = "logout" ]; then
     ownlogout

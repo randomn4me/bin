@@ -4,7 +4,7 @@ source "${HOME}/.cache/wal/colors.sh"
 
 set-bar() {
 	pkill bar
-	bar "${color0}" "${color4}" 2> /dev/null &
+	bar "${color0}" "${color3}" 2> /dev/null &
 }
 
 notify-wal() {
@@ -13,8 +13,8 @@ notify-wal() {
 }
 
 set-bspwm-colors() {
-	bspc config focused_border_color "${color4}"
-	bspc config active_border_color "${color4}"
+	bspc config focused_border_color "${color3}"
+	bspc config active_border_color "${color3}"
 }
 
 set-scss() {

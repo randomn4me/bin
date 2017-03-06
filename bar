@@ -3,7 +3,7 @@
 
 width="110"
 height="22"
-font="misc ohsnap:size=7"
+font="$BAR_FONT"
 gaps="$(bspc query -T -m focused | jq .windowGap)"
 
 resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
@@ -15,24 +15,23 @@ geometry_right="${width}x${height}+${offset_right}+$(( "${gaps}" / 2))"
 offset_left="$(( "${gaps}" ))"
 geometry_left="${width}x${height}+${offset_left}+$(( "${gaps}" / 2))"
 
-bar-date(){
-	printf "%(%d.%m  %I:%M)T\n"
+newmails() {
+	echo "$(ls "$MAIL/new" | wc -l)"
 }
 
-bar-vol(){
-	printf "%2d\n" "$(pamixer --get-volume)"
-}
-
+# left bar
 while :; do
-	printf "%s\n" "%{c}$(bar-date)"
+	printf "%s%2d  %2d  %d\n" "%{c}" "$(volume)" "$(bat)" "$(newmails)"
+	sleep 1s
+done |\
+
+lemonbar -d -g "$geometry_left" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
+
+# right bar
+while :; do
+	printf "%s%(%d.%m  %I:%M)T\n" "%{c}"
 	sleep 30s
 done |\
 
 lemonbar -d -g "$geometry_right" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
 
-while :; do
-	printf "%s\n" "%{c}$(bar-vol)  $(bat)"
-	sleep 1s
-done |\
-
-lemonbar -d -g "$geometry_left" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
