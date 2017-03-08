@@ -2,7 +2,7 @@
 FILE="${HOME}/.todo"
 
 usage() {
-	echo "$(basename $0) : [-h] [-a todo] [-d line-nr]"
+	echo "$(basename $0) : [-shn] [-a todo] [-d line-nr]"
 	exit 0
 }
 
@@ -17,6 +17,10 @@ delete() {
 	sed -i "$1d" ${FILE}
 	echo "todo deleted"
 	exit 0
+}
+
+number() {
+	cat "$FILE" | wc -l && exit 0
 }
 
 show() {
@@ -39,8 +43,9 @@ show() {
 }
 
 main() {
-	while getopts "sha:d:" opt; do
+	while getopts "nsha:d:" opt; do
 		case "$opt" in
+			"n")	number ;;
 			"s")	show ;;
 			"h")	usage ;;
 			"a")	add "$OPTARG" ;;
