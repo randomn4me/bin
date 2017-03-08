@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DEVICE="$(xinput list --name-only | grep -E "[Tt]ouchpad")"
+
+usage() {
+	cat << EOF
+Usage: $(basename $0) [on|1] [off|0] [toggle|t]
+Options:
+  on|1      : Enable touchpad 
+  off|0     : Disable touchpad 
+  toggle|t  : Toggle device
+EOF
+}
+
+deven() {
+	xinput enable "$DEVICE"
+}
+
+devdis() {
+	xinput disable "$DEVICE"
+}
+
+toggle() {
+	STATE="$(xinput list-props "$DEVICE" | grep "Enabled" | cut -d":" -f2 | grep -oE [01])"
+
+	test "$STATE" = "0" && deven || devdis
+}
+
+test -z $# && usage && exit 1
+
+case "$1" in
+	"on"|"1")				deven ;;
+	"off"|"0")			devdis ;;
+	"t"|"toggle")		toggle ;;
+	*)							usage
+esac
+

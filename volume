@@ -1,0 +1,21 @@
+#!/bin/bash
+
+CHANNEL=$(amixer | sed " 1s/^.*'\(.*\)'.*/\1/p;d")
+
+usage() {
+	echo "usage : $(basename $0) [-hlt-+]"
+}
+
+level() {
+	amixer get "$CHANNEL" | sed -n 's/^.*\[\([0-9]\+\)%.*$/\1/p' | uniq
+}
+
+test "$#" -eq 0 && echo "$(level)" && exit 0
+
+case "$1" in
+	-h)				usage ;;
+	-l)				level ;;
+	-t)				amixer set "$CHANNEL" toggle > /dev/null ;;
+	+)				amixer set "$CHANNEL" 5%+ > /dev/null ;;
+	-)				amixer set "$CHANNEL" 5%- > /dev/null ;;
+esac

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+URL="https://www.tagesschau.de/sendung/letzte-sendung/index.html"
+
+grepdate() {
+	curl -s "$URL" | grep "og:title" | sed "s/.*content.*\ \(.*\)\".*$/\1/p;d"
+}
+
+usage() {
+	cat << EOF
+Usage : $(basename $0)
+EOF
+}
+
+test $# -gt 0 && echo "$(usage)"
+
+read -n1 -r -p "Broadcast $(grepdate) correct? [Y/n] " response
+
+case "$response" in
+	[nN])		;;
+	*)			mpv "$URL" > /dev/null 2>&1 & ;;
+esac
+
+echo
+
