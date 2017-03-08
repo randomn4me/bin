@@ -1,15 +1,16 @@
 #!/bin/sh
 
-MAILDIR="${1:-${HOME}/var/mail/Inbox/new}"
-
-grepnr() {
-	echo "$(ls "$MAILDIR" | wc -l)"
+newmail() {
+	echo "$MAIL/new/$(ls -t "$MAIL/new" | head -n1)"
 }
 
-createstr() {
-	NR="$(grepnr)"
-	test "$NR" = "1" && echo "You have a new mail" ||\
-		echo "You have $NR new mails"
+grepsubj() {
+	echo "$(sed 's/^Subject:\ \(.*\)$/\1/p;d' $(newmail))"
 }
 
-notify "$(createstr)"
+grepsender() {
+	echo "$(sed 's/^From:.*<\(.*\)@.*$/\1/p;d' $(newmail))"
+}
+
+test -z "$(ls "$MAIL/new")" && notify "No new mail" && exit 1
+notify "New mail : \"$(grepsubj)\" by $(grepsender)"

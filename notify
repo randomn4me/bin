@@ -16,9 +16,7 @@ offset="$(( (monitor_width / 2) - (width / 2) ))"
 geometry="${width}x${height}+${offset}+$(( "${gaps}" / 2))"
 
 print_msg() {
-	[[ "${#1}" > "${maxmsg}" ]] && \
-		printf "%s\n" "%{c}${1:0:$(( ${maxmsg} - 2))}.." || \
-		printf "%s\n" "%{c}${1}"
+	printf "%s\n" "%{c}${1}"
 }
 
 ( print_msg "$1"; sleep "${tsleep}" ) |\
