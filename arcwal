@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# archives pictures which cannot create 16 unique colors using imagemagick
+# archives pictures which cannot create 16 unique colors with imagemagick
 
 waldir=${HOME}/usr/pics/wallpapers
 arcdir=${HOME}/usr/pics/wallpapers/archive
@@ -9,7 +9,7 @@ get_colors() {
 }
 
 for w in ${waldir}/*.jpg; do
-	colors=($(get_colors ${w}))
+	colors=($(get_colors "${w}"))
 	(( "${#colors[@]}" <= 15 )) && {
 		echo "archiving $(basename ${w})"
 		mv "${w}" "${arcdir}/"
