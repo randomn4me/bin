@@ -8,7 +8,7 @@ height="22"
 font="misc ohsnap:size=7"
 gaps="$(bspc query -T -m focused | jq .windowGap)"
 tsleep="10s"
-maxmsg="40"
+maxlength="40"
 
 resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
 monitor_width="${resolution/x*}"
@@ -16,7 +16,8 @@ offset="$(( (monitor_width / 2) - (width / 2) ))"
 geometry="${width}x${height}+${offset}+$(( "${gaps}" / 2))"
 
 print_msg() {
-	printf "%s\n" "%{c}${1}"
+	test ${#1} -ge $maxlength && printf "%s\n" "%{c}${1:0:$maxlength}.." || \
+		printf "%s\n" "%{c}$1"
 }
 
 ( print_msg "$1"; sleep "${tsleep}" ) |\
