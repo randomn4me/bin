@@ -13,4 +13,4 @@ grepsender() {
 }
 
 test -z "$(ls "$MAIL/new")" && notify "No new mail" && exit 1
-notify "New mail : \"$(grepsubj)\" by $(grepsender)"
+notify "New mail by \"$(grepsender)\" : \"$(grepsubj)\""
