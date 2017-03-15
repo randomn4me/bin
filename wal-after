@@ -4,13 +4,13 @@ source "${HOME}/.cache/wal/colors.sh"
 
 set-bar() {
 	pkill bar
-	bar "${color0}" "${color3}" 2> /dev/null &
+	bar "$color0" "$color3" "$color8" 2> /dev/null &
 }
 
-notify-wal() {
-	walpath=$(cat ${HOME}/.cache/wal/wal | sed "s/\..*$//")
-	notify "Changed theme. Using wal \"$(basename -a ${walpath})\""
-}
+# notify-wal() {
+# 	walpath=$(cat ${HOME}/.cache/wal/wal | sed "s/\..*$//")
+# 	notify "Changed theme. Using wal \"$(basename -a ${walpath})\""
+# }
 
 set-bspwm-colors() {
 	bspc config focused_border_color "${color3}"
@@ -23,7 +23,7 @@ set-scss() {
 
 main() {
 	set-bar
-	notify-wal
+#	notify-wal
 	set-bspwm-colors
 	set-scss
 }
