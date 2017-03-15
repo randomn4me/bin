@@ -2,7 +2,7 @@
 FILE="${HOME}/.todo"
 
 usage() {
-	echo "$(basename $0) : [-shn] [-a todo] [-d line-nr]"
+	echo "Usage: $(basename $0) [-shn] [-a todo] [-d line-nr]"
 	exit 0
 }
 
