@@ -1,25 +1,23 @@
 #!/bin/bash
 
-URL="https://www.tagesschau.de/sendung/letzte-sendung/index.html"
+test $# -gt 0 && echo "$(usage)"
 
-grepdate() {
-	curl -s "$URL" | grep "og:title" | sed "s/.*content.*\ \(.*\)\".*$/\1/p;d"
-}
+URL="https://www.tagesschau.de/sendung/tagesschau/index.html"
+RESPONSE="Y"
 
 usage() {
 	cat << EOF
 Usage : $(basename $0)
 EOF
 }
+grepdate() {
+	curl -s "$URL" | grep og:title | sed -E "s/^.*\ ([0-9]{2}\.[0-9]{2}\.[0-9]{4}).*$/\1/p;d"
+}
 
-test $# -gt 0 && echo "$(usage)"
+read -n 1 -p "Date $(grepdate) correct? " RESPONSE
 
-read -n1 -r -p "Broadcast $(grepdate) correct? [Y/n] " response
-
-case "$response" in
-	[nN])		;;
-	*)			mpv "$URL" > /dev/null 2>&1 & ;;
+case "$RESPONSE" in
+	[nN])   echo ;;
+	*)      mpv "$URL" > /dev/null 2>&1 & ;;
 esac
-
-echo
 
