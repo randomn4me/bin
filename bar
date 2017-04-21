@@ -9,11 +9,11 @@ gaps="$(bspc query -T -m focused | jq .windowGap)"
 resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
 monitor_width="${resolution/x*}"
 
-offset_right="$((monitor_width - width - "${gaps}" ))"
-geometry_right="${width}x${height}+${offset_right}+$(( "${gaps}" / 2))"
+offset_right="$((monitor_width - width - $gaps ))"
+geometry_right="${width}x${height}+${offset_right}+$(( $gaps / 2))"
 
-offset_left="$(( "${gaps}" ))"
-geometry_left="${width}x${height}+${offset_left}+$(( "${gaps}" / 2))"
+offset_left="$(( $gaps ))"
+geometry_left="${width}x${height}+${offset_left}+$(( $gaps / 2))"
 
 newmails() {
 	echo "$(ls "$MAIL/new" | wc -l)"
