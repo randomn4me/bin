@@ -19,9 +19,14 @@ newmails() {
 	echo "$(ls "$MAIL/new" | wc -l)"
 }
 
+vol() {
+	test "$(volume -s)" = "on" && volume || echo "!$(volume)"
+
+}
+
 # left bar
 while :; do
-	printf "%s%2d  %2d  %d\n" "%{c}" "$(volume)" "$(bat)" "$(newmails)"
+	printf "%s%3s  %2d  %d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
 	sleep 1s
 done |\
 
