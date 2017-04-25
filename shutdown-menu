@@ -1,14 +1,12 @@
 #!/bin/bash
 
-res=$(echo -e "reboot\nlogout\nshutdown" | menu)
- 
-if [ $res = "logout" ]; then
-    ownlogout
-fi
-if [ $res = "reboot" ]; then
-    systemctl reboot
-fi
-if [ $res = "shutdown" ]; then
-    systemctl poweroff
-fi
+res=$(echo -e "logout\nreboot\nshutdown\nsuspend" | menu)
+
+case "$res" in
+	"logout")		ownlogout ;;
+	"reboot")		systemctl reboot ;;
+	"shutdown")	systemctl poweroff ;;
+	"suspend")	systemctl suspend ;;
+esac
+
 exit 0
