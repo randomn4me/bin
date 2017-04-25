@@ -13,4 +13,4 @@ gaps="$(bspc query -T -m focused | jq .windowGap)"
 offset_x="$(( (monitor_width / 2) - (width / 2) ))"
 offset_y="$(( $gaps / 2))"
 
-dmenu -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color3" -sb "$color3" -sf "$color0" 2>&1 < /dev/stdin
+dmenu_run -q -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "$color0" -nf "$color3" -sb "$color3" -sf "$color0" 2>&1
