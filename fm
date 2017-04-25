@@ -1,0 +1,16 @@
+#!/bin/bash
+
+usage() {
+	echo "usage: $(basename $0) <dir>"
+}
+
+test $# -ne 1 && usage && exit 0
+test ! -e $1 && usage && exit 0
+
+FULLPATH="$(readlink -f $1)"
+
+while [ -d $FULLPATH ]; do
+	FULLPATH="$FULLPATH/$(ls $FULLPATH | menu)"
+done
+
+xdg-open $FULLPATH &
