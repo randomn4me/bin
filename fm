@@ -10,7 +10,12 @@ test ! -e $1 && usage && exit 0
 FULLPATH="$(readlink -f $1)"
 
 while [ -d $FULLPATH ]; do
-	FULLPATH="$FULLPATH/$(ls $FULLPATH | menu)"
+	NEW="$(ls $FULLPATH | menu)"
+
+	# if dmenu returns failure exit
+	test -z "$NEW" && exit 0
+
+	FULLPATH="$FULLPATH/$NEW"
 done
 
 xdg-open $FULLPATH &
