@@ -1,6 +1,6 @@
 #!/bin/bash
 
-res=$(echo -e "logout\nreboot\nshutdown\nsuspend" | menu)
+res=$(echo -e "logout\nreboot\nsuspend\nshutdown" | menu)
 
 case "$res" in
 	"logout")		ownlogout ;;
