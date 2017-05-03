@@ -1,17 +1,37 @@
 #!/usr/bin/env bash
 # archives pictures which cannot create 16 unique colors with imagemagick
 
+cachdir=${HOME}/.cache/wal
 waldir=${HOME}/usr/pics/wallpapers
 arcdir=${HOME}/usr/pics/wallpapers/archive
+
+usage() {
+	printf "%s\n" "Usage: $(basename $0) [-ha]"
+}
 
 get_colors() {
 	convert $1 +dither -colors 16 -unique-colors txt:- | grep -E -o " \#.{6}"
 }
 
-for w in ${waldir}/*.jpg; do
-	colors=($(get_colors "${w}"))
-	(( "${#colors[@]}" <= 15 )) && {
-		echo "archiving $(basename ${w})"
-		mv "${w}" "${arcdir}/"
-	}
-done
+arc_all() {
+	for w in $waldir/*.jpg; do
+		colors=($(get_colors "$w"))
+		(( "${#colors[@]}" <= 15 )) && {
+			echo "archiving $(basename $w)"
+			mv "$w" "$arcdir/"
+		}
+	done
+}
+
+arc_cur() {
+	w="$(cat $cachdir/wal)"
+	test ! -f $w && echo "file do not exist" && exit 0
+	mv "$w" "$arcdir"
+	echo "archiving $(basename $w)"
+}
+
+case $1 in
+	-h) usage ;;
+	-a) arc_all ;;
+	 *) arc_cur ;;
+esac
