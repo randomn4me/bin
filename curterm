@@ -1,0 +1,21 @@
+#!/bin/bash
+
+usage()
+{
+	cat <<EOF
+Usage: $(basename $0) [-hp]
+	-h: Showing this message
+	-p: Printing the directory
+EOF
+	exit 1
+}
+
+DIR="$HOME/usr/docs/uni/msc_itsec"
+CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
+
+case $1 in
+	-h) usage ;;
+	-p) printf "%s\n" $CURTERM ;;
+	*) cd $CURTERM && exec bash ;;
+esac
+
