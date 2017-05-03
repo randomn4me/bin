@@ -16,6 +16,5 @@ CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
 case $1 in
 	-h) usage ;;
 	-p) printf "%s\n" $CURTERM ;;
-	*) cd $CURTERM && exec bash ;;
+	*) cd $CURTERM ;;
 esac
-
