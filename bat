@@ -19,6 +19,7 @@ state () {
 }
 
 resttime () {
+	test $BATS = "Charging" && printf "%s\n" $BATS && exit 0
 	HOUR="$(( $BATEN / $BATPN ))"
 	MIN=$(bc -l <<< "(($BATEN / $BATPN) - $HOUR) * 60")
 	
