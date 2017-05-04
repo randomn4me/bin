@@ -1,12 +1,12 @@
 #!/bin/bash
 
-res=$(echo -e "logout\nreboot\nsuspend\nshutdown" | menu)
+res=$(echo -e "logout\nstandby\nreboot\nshutdown" | menu)
 
 case "$res" in
 	"logout")		ownlogout ;;
+	"standby")	systemctl hibernate ;;
 	"reboot")		systemctl reboot ;;
 	"shutdown")	systemctl poweroff ;;
-	"suspend")	systemctl suspend ;;
 esac
 
 exit 0
