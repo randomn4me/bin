@@ -1,7 +1,3 @@
 #!/bin/bash
 
-UNIPATH="$(readlink -f ~/usr/docs/uni/msc_itsec)"
-
-CUR_TERM="$(ls $UNIPATH -t -1 | head -n1)"
-
-fm $UNIPATH/$CUR_TERM
+fm $(curterm -p)

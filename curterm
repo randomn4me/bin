@@ -3,9 +3,8 @@
 usage()
 {
 	cat <<EOF
-Usage: $(basename $0) [-hp]
+Usage: $(basename $0) [-h]
 	-h: Showing this message
-	-p: Printing the directory
 EOF
 	exit 1
 }
@@ -15,6 +14,5 @@ CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
 
 case $1 in
 	-h) usage ;;
-	-p) printf "%s\n" $CURTERM ;;
-	*) cd $CURTERM ;;
+	*) printf "%s\n" $CURTERM ;;
 esac
