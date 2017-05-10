@@ -35,7 +35,7 @@ lemonbar -d -g "$geometry_left" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}"
 # right bar
 while :; do
 	printf "%s%(%d.%m  %I:%M)T\n" "%{c}"
-	sleep 30s
+	sleep 60s 
 done |\
 
 lemonbar -d -g "$geometry_right" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
