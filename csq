@@ -1,0 +1,15 @@
+#!/bin/bash
+
+usage() {
+	cat << EOF
+Usage: $(basename $0) <start> <end> <steps>
+EOF
+}
+
+test $# -ne 3 && usage && exit 1
+
+S=$1
+E=$2
+STEPS=$(( $3 / 2 ))
+
+printf "%s %s\n" "$(gcsq -n -s $STEPS $S $E)" "$(gcsq -n -s $STEPS $E $S)"

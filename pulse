@@ -1,0 +1,5 @@
+#!/bin/bash
+
+source $HOME/.cache/wal/colors.sh
+
+rainbow "$(csq ${color3:1} ${color0:1} 10)"
