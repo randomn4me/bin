@@ -17,10 +17,15 @@ set-bspwm-colors() {
 	bspc config active_border_color "${color3}"
 }
 
+refresh_pulse() {
+	test -n "$(pgrep rainbow)" && pulse r
+}
+
 main() {
 	set-bar
 #	notify-wal
 	set-bspwm-colors
+	refresh_pulse
 }
 
 main > /dev/null 2>&1
