@@ -17,15 +17,10 @@ set-bspwm-colors() {
 	bspc config active_border_color "${color3}"
 }
 
-set-scss() {
-	sassc --style expanded "${HOME}/src/html/startpage/style.scss" > "${HOME}/src/html/startpage/style.css"
-}
-
 main() {
 	set-bar
 #	notify-wal
 	set-bspwm-colors
-	set-scss
 }
 
 main > /dev/null 2>&1
