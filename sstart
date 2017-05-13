@@ -1,0 +1,37 @@
+#!/bin/bash
+
+usage() {
+	cat << EOF
+Usage: $(basename $0) <script> <0|1|r|t>
+	0: disable
+	1: enable
+	r: reload if enabled
+	t: toggle
+EOF
+}
+
+start_script() {
+	test -n "$(pgrep $1)" && printf "%s\n" "Already running" && exit 1
+	$1 &
+}
+
+end_script() {
+	test -z "$(pgrep $1)" && printf "%s\n" "Not running" && exit 1
+	pkill $1
+}
+
+toggle() {
+	test -z "$(pgrep $1)" && start_script $1 && exit 0
+	test -n "$(pgrep $1)" && end_script $1 && exit 0
+}
+
+test $# -ne 2 && usage && exit 1
+
+case $2 in
+	0) end_script $1 ;;
+	1) start_script $1 ;;
+	r) end_script $1 && start_script $1 ;;
+	t) toggle $1 ;;
+	*) usage ;;
+esac
+

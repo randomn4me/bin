@@ -1,6 +1,8 @@
 #!/bin/bash
 # dependencies: xrandr, printf, sleep, lemonbar
 
+test -f $COLOR_FILE && source $COLOR_FILE
+
 width="110"
 height="22"
 font="$BAR_FONT"
@@ -30,7 +32,7 @@ while :; do
 	sleep 1s
 done |\
 
-lemonbar -d -g "$geometry_left" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
+lemonbar -d -g "$geometry_left" -f "$font" -B "$color0" -F "$color3" -n "bar" &
 
 # right bar
 while :; do
@@ -38,5 +40,5 @@ while :; do
 	sleep 60s 
 done |\
 
-lemonbar -d -g "$geometry_right" -f "$font" -B "${1:-#f0f0f0}" -F "${2:-#000000}" -n "bar" &
+lemonbar -d -g "$geometry_right" -f "$font" -B "${color0:-#010101}" -F "${color3:-#FFFFFF}" -n "bar" &
 

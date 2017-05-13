@@ -4,7 +4,7 @@
 # ffmpeg
 # i3lock-color-git
 
-source ${HOME}/.cache/wal/colors.sh
+source $COLOR_FILE
  
 IMAGE=/tmp/i3lock.png
 LOCK=$HOME/.config/lockicon.png

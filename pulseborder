@@ -1,0 +1,14 @@
+#!/bin/sh
+
+source $COLOR_FILE
+
+FREQ="0.1"
+COLORS="$(csq ${color3:1} ${color0:1} 10)"
+CUR=$(pfw)
+
+while :; do
+    for c in $COLORS; do
+        chwb -c $c $(pfw) 
+        sleep $FREQ
+    done
+done
