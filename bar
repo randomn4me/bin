@@ -3,19 +3,20 @@
 
 test -f $COLOR_FILE && source $COLOR_FILE
 
-width="110"
-height="22"
+height="$TOP_PADDING"
 font="$BAR_FONT"
-gaps="$(bspc query -T -m focused | jq .windowGap)"
+gaps="$GAPS"
 
 resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
 monitor_width="${resolution/x*}"
+width="$(( monitor_width / 15 ))"
 
 offset_right="$((monitor_width - width - $gaps ))"
 geometry_right="${width}x${height}+${offset_right}+$(( $gaps / 2))"
 
 offset_left="$(( $gaps ))"
 geometry_left="${width}x${height}+${offset_left}+$(( $gaps / 2))"
+
 
 newmails() {
 	echo "$(ls "$MAIL/new" | wc -l)"

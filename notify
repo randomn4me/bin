@@ -4,17 +4,16 @@
 source $COLOR_FILE
 
 width="300"
-height="22"
+height="$TOP_PADDING"
 font="misc ohsnap:size=7"
-gaps="$(bspc query -T -m focused | jq .windowGap)"
-top_padding="$(bspc query -m $(bspc query -M) -T | jq .padding.top)"
+gaps="$GAPS"
 tsleep="10s"
 maxlength="40"
 
 resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
 monitor_width="${resolution/x*}"
 offset="$(( (monitor_width / 2) - (width / 2) ))"
-geometry="${width}x${height}+${offset}+$(( "$top_padding" / 2))"
+geometry="${width}x${height}+${offset}+$(( "$gaps" / 2))"
 
 print_msg() {
 	test ${#1} -ge $maxlength && printf "%s\n" "%{c}${1:0:$maxlength}.." || \
