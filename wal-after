@@ -2,9 +2,10 @@
 
 source "${HOME}/.cache/wal/colors.sh"
 
-set-bspwm-colors() {
-	bspc config focused_border_color "${color3}"
-	bspc config active_border_color "${color3}"
+set-border-colors() {
+	test -n $(pgrep "bspwm") && \
+		bspc config focused_border_color "$color3" && \
+		bspc config normal_border_color "$color0"
 }
 
 refresh_pulse() {
@@ -13,7 +14,7 @@ refresh_pulse() {
 
 main() {
 	sstart bar r
-	set-bspwm-colors
+	set-border-colors
 	refresh_pulse
 }
 
