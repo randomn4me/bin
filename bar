@@ -1,22 +1,8 @@
 #!/bin/bash
-# dependencies: xrandr, printf, sleep, lemonbar
 
-test -f $COLOR_FILE && source $COLOR_FILE
-
-height="$TOP_PADDING"
-font="$BAR_FONT"
-gaps="$GAPS"
-
-resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
-monitor_width="${resolution/x*}"
-width="$(( monitor_width / 15 ))"
-
-offset_right="$((monitor_width - width - $gaps ))"
-geometry_right="${width}x${height}+${offset_right}+$(( $gaps / 2))"
-
-offset_left="$(( $gaps ))"
-geometry_left="${width}x${height}+${offset_left}+$(( $gaps / 2))"
-
+elemwidth() {
+	echo "$(( $(monwidth) / 15 ))"
+}
 
 newmails() {
 	echo "$(ls "$MAIL/new" | wc -l)"
@@ -29,11 +15,11 @@ vol() {
 
 # left bar
 while :; do
-	printf "%s%3s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
+	printf "%s%3s %3d %2d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)" "$(todo -n)"
 	sleep 1s
 done |\
 
-lemonbar -d -g "$geometry_left" -f "$font" -B "$color0" -F "$color3" -n "bar" &
+mybar $GAPS "bar" &
 
 # right bar
 while :; do
@@ -41,5 +27,5 @@ while :; do
 	sleep 60s 
 done |\
 
-lemonbar -d -g "$geometry_right" -f "$font" -B "${color0:-#010101}" -F "${color3:-#FFFFFF}" -n "bar" &
+mybar $(( $(monwidth) - $(elemwidth) - GAPS )) "bar" &
 

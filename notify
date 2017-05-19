@@ -1,25 +1,15 @@
 #!/usr/bin/env bash
 # sends first arg as notification
 
-source $COLOR_FILE
-
-width="300"
-height="$TOP_PADDING"
-font="misc ohsnap:size=7"
-gaps="$GAPS"
-tsleep="10s"
-maxlength="40"
-
-resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
-monitor_width="${resolution/x*}"
-offset="$(( (monitor_width / 2) - (width / 2) ))"
-geometry="${width}x${height}+${offset}+$(( "$gaps" / 2))"
+MAXENGTH=${MAXLENGTH:-40}
+SLEEP=${SLEEP:-10}
+export WIDTH="$(( $(monwidth) / 5 ))"
 
 print_msg() {
 	test ${#1} -ge $maxlength && printf "%s\n" "%{c}${1:0:$maxlength}.." || \
 		printf "%s\n" "%{c}$1"
 }
 
-( print_msg "$1"; sleep "${tsleep}" ) |\
+( print_msg "$1"; sleep "$SLEEP" ) |\
 	
-lemonbar -d -g "$geometry" -f "$font" -B "${color0}" -F "${color3}" -n "bar" &
+mybar "$(( $(monwidth) / 2 - WIDTH / 2))" "notify" &
