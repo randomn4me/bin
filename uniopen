@@ -1,3 +1,5 @@
 #!/bin/bash
 
-fm $(curterm -p)
+cd $(curterm -p)
+
+xdg-open $(find * -type f -name "*.pdf" | WIDTH="$(( $(monwidth) / 3 ))" menu "-q -p $(basename $0)")
