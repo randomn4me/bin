@@ -19,6 +19,6 @@ monitor_width="${resolution/x*}"
 TMP_WIDTH="$(( monitor_width / 15 ))"
 width="${WIDTH:-$TMP_WIDTH}"
 
-geometry="${width}x$height+$1+$(( $gaps / 2))"
+geometry="${width}x$height+${1:-0}+$(( $gaps / 2))"
 
 lemonbar -d -g "$geometry" -f "$font" -B "$color0" -F "$color3" -n "$2"

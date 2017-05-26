@@ -16,7 +16,7 @@ start_script() {
 }
 
 end_script() {
-	test -z "$(pgrep $1)" && printf "%s\n" "Not running" && exit 1
+	test -z "$(pgrep $1)" && printf "%s\n" "Not running" > /dev/stderr && exit 1
 	pkill $1
 }
 

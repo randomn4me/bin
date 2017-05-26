@@ -8,14 +8,10 @@ set-border-colors() {
 		bspc config normal_border_color "$color0"
 }
 
-refresh_pulse() {
-	test -n "$(pgrep rainbow)" && pulse r
-}
-
 main() {
-	sstart bar r
+	sstart bar r 2> /dev/null
 	set-border-colors
-	refresh_pulse
+	sstart pulseborder r 2> /dev/null
 }
 
 main > /dev/null 2>&1
