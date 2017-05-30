@@ -4,4 +4,4 @@ CACHEWAL="$HOME/.cache/wal"
 
 test ! -f "$(cat $CACHEWAL/wal)" && exit 1
 
-wal -i $(cat $CACHEWAL/wal) -o wal-after &
+wal -i $(< $CACHEWAL/wal) -o wal-after &
