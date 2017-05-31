@@ -11,7 +11,7 @@ EOF
 }
 
 start_script() {
-	test -n "$(pgrep $1)" && printf "%s\n" "Already running" && exit 1
+	test -n "$(pgrep $1)" && printf "%s\n" "Already running" > /dev/stderr && exit 1
 	$1 &
 }
 
