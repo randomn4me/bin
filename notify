@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 # sends first arg as notification
 
-MAXENGTH=${MAXLENGTH:-40}
-SLEEP=${SLEEP:-10}
-export WIDTH="$(( $(monwidth) / 5 ))"
+SLEEP=10
 
-print_msg() {
-	test ${#1} -ge $maxlength && printf "%s\n" "%{c}${1:0:$maxlength}.." || \
-		printf "%s\n" "%{c}$1"
-}
+MON_WIDTH=$(wattr w `lsw -r`)
+export WIDTH="$(( MON_WIDTH / 5 ))"
 
-( print_msg "$1"; sleep "$SLEEP" ) |\
+( echo "%{c}$@"; sleep "$SLEEP" ) |\
 	
-mybar "$(( $(monwidth) / 2 - WIDTH / 2))" "notify" &
+mybar "$(( MON_WIDTH / 2 - WIDTH / 2))" "notify" &

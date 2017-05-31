@@ -1,4 +1,0 @@
-#!/bin/sh
-
-resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
-echo "${resolution/x*}"

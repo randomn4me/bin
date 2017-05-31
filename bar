@@ -1,16 +1,13 @@
 #!/bin/bash
 
-elemwidth() {
-	echo "$(( $(monwidth) / 15 ))"
-}
+MONWIDTH=$(wattr w `lsw -r`)
 
 newmails() {
-	echo "$(ls "$MAIL/new" | wc -l)"
+	ls "$MAIL/new" | wc -l
 }
 
 vol() {
 	test "$(volume -s)" = "on" && volume || echo "!$(volume)"
-
 }
 
 # left bar
@@ -27,5 +24,4 @@ while :; do
 	sleep 60s 
 done |\
 
-mybar $(( $(monwidth) - $(elemwidth) - GAPS )) "bar" &
-
+mybar $(( MONWIDTH - MONWIDTH / 15 - GAPS )) "bar" &

@@ -1,5 +1,6 @@
 #!/bin/bash
 
 cd $(curterm -p)
+export WIDTH="$(( $(wattr w `lsw -r`) / 3 ))"
 
-xdg-open $(find * -type f -name "*.pdf" | WIDTH="$(( $(monwidth) / 3 ))" menu "-q -p $(basename $0)")
+xdg-open "$(find * -type f -name "*.pdf" | menu "-q -p $(basename $0)")"
