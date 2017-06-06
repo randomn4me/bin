@@ -1,0 +1,11 @@
+#!/bin/bash
+
+usage() {
+cat << EOF
+Usage : $(basename $0) <frompage> <topage> <file> [tofile]
+EOF
+}
+
+test ! "$#" = "3" && usage && exit 0
+
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dFirstPage="$1" -dLastPage="$2" -sOutputFile=${4:-"output.pdf"} "$3" 2>&1 &
