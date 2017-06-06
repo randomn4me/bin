@@ -2,20 +2,22 @@
 FILE="${HOME}/.todo"
 
 usage() {
-	echo "Usage: $(basename $0) [-shn] [-a todo] [-d line-nr]"
+	cat << EOF
+Usage: $(basename $0) [-shn] [-a todo] [-d <line-nr>]
+EOF
 	exit 0
 }
 
 add() {
-	echo "$1" >> "${FILE}"
-	echo "todo added"
+	printf "$1\n" >> "$FILE"
+	printf "todo added\n"
 	exit 0
 }
 
 delete() {
 	test -n "$1" || exit 1
-	sed -i "$1d" ${FILE}
-	echo "todo deleted"
+	printf "todo \'`sed $1q $FILE`\' deleted\n"
+	sed -i "$1d" $FILE
 	exit 0
 }
 
@@ -24,21 +26,23 @@ number() {
 }
 
 show() {
-	echo ""
-	echo -e "       ██                 ██         "
-	echo -e "      ░██                ░██         "
-	echo -e "     ██████  ██████      ░██  ██████ "
-	echo -e "    ░░░██░  ██░░░░██  ██████ ██░░░░██"
-	echo -e "      ░██  ░██   ░██ ██░░░██░██   ░██"
-	echo -e "      ░██  ░██   ░██░██  ░██░██   ░██"
-	echo -e "      ░░██ ░░██████ ░░██████░░██████ "
-	echo -e "       ░░   ░░░░░░   ░░░░░░  ░░░░░░  "
-	echo ""
-	echo -e "     ████████████████████████████████"
-  echo    "    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ "
-	echo ""
-	test -f "${FILE}" && nl "${FILE}"
-	echo ""
+	cat << EOF
+
+       ██                 ██         
+      ░██                ░██         
+     ██████  ██████      ░██  ██████ 
+    ░░░██░  ██░░░░██  ██████ ██░░░░██
+      ░██  ░██   ░██ ██░░░██░██   ░██
+      ░██  ░██   ░██░██  ░██░██   ░██
+      ░░██ ░░██████ ░░██████░░██████ 
+       ░░   ░░░░░░   ░░░░░░  ░░░░░░  
+    
+     ████████████████████████████████
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 
+
+`test -f "${FILE}" && nl -s ": " $FILE`
+
+EOF
 	exit 0
 }
 
