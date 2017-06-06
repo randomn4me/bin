@@ -3,7 +3,7 @@
 
 test $# -eq 0 && exit 1
 
-SLEEP=10
+SLEEP=${SLEEP:-10s}
 
 MON_WIDTH=$(wattr w `lsw -r`)
 export WIDTH="$(( MON_WIDTH / 5 ))"
