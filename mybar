@@ -14,9 +14,8 @@ height="$TOP_PADDING"
 font="$BAR_FONT"
 gaps="$GAPS"
 
-resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
-monitor_width="${resolution/x*}"
-TMP_WIDTH="$(( monitor_width / 15 ))"
+MON_WIDTH=$(wattr w `lsw -r`)
+TMP_WIDTH="$(( MON_WIDTH / 15 ))"
 width="${WIDTH:-$TMP_WIDTH}"
 
 geometry="${width}x$height+${1:-0}+$(( $gaps / 2))"
