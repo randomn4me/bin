@@ -12,7 +12,7 @@ vol() {
 
 # left bar
 while :; do
-	printf "%s%3s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
+	printf "%s%4s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
 	sleep 1s
 done |\
 
