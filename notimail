@@ -5,8 +5,15 @@ newmail() {
 }
 
 grepsender() {
-	echo "$(sed 's/^From:.*<\(.*\)@.*$/\1/p;d' $(newmail))"
+	LINE=`grep -n "^From:" $(newmail)`
+	LINENR=`cut -d: -f1 <<< $LINE`
+
+	while [ -z "$NAME" ]; do
+		NAME=`sed "${LINENR}s/^.*<\(.*\)@.*$/\1/p;d" $(newmail)`
+		LINENR=$(( LINENR + 1))
+	done
+	echo $NAME
 }
 
 test -z "$(ls "$MAIL/new")" && notify "No new mail" && exit 1
-notify "New mail by \"$(grepsender)\""
+SLEEP=2 notify "New mail by \"$(grepsender)\""
