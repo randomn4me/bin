@@ -1,0 +1,19 @@
+#!/bin/bash
+
+FULL="="
+
+# borrowed by xero
+draw()
+{
+  perc=$1
+  size=$2
+  inc=$(( perc * size / 100 ))
+  out=
+  for v in `seq 0 $(( size - 1 ))`; do
+    test "$inc" -le "$v" \
+			&& out="${out} " \
+			|| out="${out}$FULL"
+  done
+	printf "[${out}]" 
+}
+SLEEP=1 notify "$(draw `volume` 50)"
