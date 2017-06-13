@@ -1,34 +1,29 @@
 #!/bin/bash
 
-if ! [ $(id -u) = 0 ]; then
-  echo "this script must be run as root"
-  exit 1
-fi
-
 PID="/run/uni-vpn.pid"
-USER="$(su - phil -c "pass tu-id")"
-PASS="$(su - phil -c "pass tu-darmstadt/$USER")"
+USER="$(pass tu-darmstadt/tu-id)"
+PASS="$(pass tu-darmstadt/$USER)"
 
 case "$1" in
-	up|start)
+	up|start|1)
 		if [ -f "${PID}" ]; then
-			echo "vpn is already connected"
+			printf "%s\n" "vpn is already connected" > /dev/stderr
 			exit 1
 		fi
-		echo "${PASS}" | openconnect --background --pid-file="${PID}" --quiet vpn.hrz.tu-darmstadt.de --authgroup=campus --user="${USER}" --passwd-on-stdin
-		echo "vpn up"
+		printf "%s\n" "${PASS}" | sudo openconnect --background --pid-file="${PID}" --quiet vpn.hrz.tu-darmstadt.de --authgroup=campus --user="${USER}" --passwd-on-stdin 2> /dev/null
+		printf "%s\n" "vpn up"
 		;;
-	down|stop)
+	down|stop|0)
 		if [ ! -f "${PID}" ]; then
-			echo "vpn not connected"
+			printf "%s\n" "vpn not connected" > /dev/stderr
 			exit 1
 		fi
-		kill -TERM $(cat ${PID})
-		rm ${PID}
-		echo "vpn disconnected"
+		sudo kill -TERM $(cat ${PID})
+		sudo rm ${PID}
+		printf "%s\n" "vpn disconnected"
 		;;
 	*)
-		echo "usage: $(basename $0) <start|stop>"
+		printf "%s\n" "usage: $(basename $0) <1|0>" > /dev/stderr
 		exit 1
 		;;
 esac
