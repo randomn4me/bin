@@ -7,8 +7,9 @@ SLEEP=${SLEEP:-10s}
 
 MON_WIDTH=$(wattr w `lsw -r`)
 export WIDTH="$(( MON_WIDTH / 5 ))"
+TEXT="$@"
 
 ( 
-	echo "%{c}$@"
+	echo "%{c}${TEXT:0:50}"
 	sleep "$SLEEP" 
 ) | mybar "$(( MON_WIDTH / 2 - WIDTH / 2))" "notify" &

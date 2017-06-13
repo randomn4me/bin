@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# FULL="━"
 FULL="="
 
 # borrowed by xero
@@ -16,4 +17,4 @@ draw()
   done
 	printf "[${out}]" 
 }
-SLEEP=1 notify "$(draw `volume` 50)"
+SLEEP=1 notify "$(draw `volume` 48)"
