@@ -1,0 +1,34 @@
+#!/bin/sh
+
+usage() {
+	cat << EOF
+Usage: $(basename $0) <session>
+	session: uni
+EOF
+}
+
+attach() {
+	tmux attach-session -t "$SESSION_NAME" 2> /dev/null
+}
+
+create_uni() {
+	cd $(curterm -p)
+
+	tmux new-session -d -n "misc" -s "$SESSION_NAME"
+
+	for d in `ls -d *`; do
+		cd "$d"
+		tmux new-window -t "$SESSION_NAME" -n "$d" -d
+		cd ..
+	done
+}
+
+case "$1" in
+	uni)
+		SESSION_NAME="uni"
+
+		# check if session exists and attach, otherwise create it
+		attach || create_uni
+		;;
+	  *) usage ;;
+esac
