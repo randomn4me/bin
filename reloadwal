@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CACHEWAL="~/.cache/wal"
+CACHEWAL="$HOME/.cache/wal"
 
 test ! -f "$(cat $CACHEWAL/wal)" && exit 1
 
