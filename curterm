@@ -1,18 +1,6 @@
 #!/bin/bash
 
-usage()
-{
-	cat <<EOF
-Usage: $(basename $0) [-h]
-	-h: Showing this message
-EOF
-	exit 1
-}
-
-DIR="$HOME/usr/docs/uni/msc_itsec"
+DIR="~/usr/docs/uni/msc_itsec"
 CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
 
-case $1 in
-	-h) usage ;;
-	*) printf "%s\n" $CURTERM ;;
-esac
+printf "%s\n" $CURTERM

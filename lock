@@ -8,7 +8,7 @@ source $COLOR_FILE
  
 IMAGE=/tmp/i3lock.png
 TMP_LOCK=/tmp/tmp_lock.png
-LOCK=$HOME/.config/lockicon.png
+LOCK=~/.config/lockicon.png
 RES=$(xrandr --current | grep '*' | uniq | awk '{print $1}')
 
 convert $LOCK -fill $color1 +opaque none $TMP_LOCK

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${HOME}/.cache/wal/colors.sh"
+source "~/.cache/wal/colors.sh"
 
 set-border-colors() {
 	test -n $(pgrep "bspwm") && \

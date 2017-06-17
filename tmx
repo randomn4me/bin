@@ -2,33 +2,51 @@
 
 usage() {
 	cat << EOF
-Usage: $(basename $0) <session>
-	session: uni
+Usage: $(basename $0) <uni|random>
 EOF
 }
 
 attach() {
-	tmux attach-session -t "$SESSION_NAME" 2> /dev/null
+	tmux attach-session -t "$1" 2> /dev/null
 }
 
 create_uni() {
-	cd $(curterm -p)
+	SESSION_NAME="uni"
+	DIR="`curterm`"
+	
+	test -z $DIR && printf "Error loading dir\n" && exit 1
 
 	tmux new-session -d -n "misc" -s "$SESSION_NAME"
 
-	for d in `ls -d *`; do
-		cd "$d"
-		tmux new-window -t "$SESSION_NAME" -n "$d" -d
-		cd ..
+	for d in `ls -d $DIR/*`; do
+		cd $d
+		tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
 	done
+
+	attach $SESSION_NAME
+}
+
+create_random() {
+	SESSION_NAME="random"
+
+	tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
+	tmux split-window -v -p 25 -t $SESSION_NAME "cava"
+
+	tmux select-pane -U -t $SESSION_NAME
+	tmux split-window -h -p 45 "ncmpcpp --screen browser"
+
+	tmux select-pane -D -t $SESSION_NAME
+	tmux split-window -h -p 35 -t $SESSION_NAME
+	tmux clock-mode -t $SESSION_NAME
+
+	tmux select-pane -U -t $SESSION_NAME
+	tmux select-pane -L
+	
+	attach $SESSION_NAME
 }
 
 case "$1" in
-	uni)
-		SESSION_NAME="uni"
-
-		# check if session exists and attach, otherwise create it
-		attach || create_uni
-		;;
-	  *) usage ;;
+	uni)    attach $1 || create_uni ;;
+	random) attach $1 || create_random ;;
+	*)      usage ;;
 esac

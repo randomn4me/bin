@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # archives pictures which cannot create 16 unique colors with imagemagick
 
-cachdir=${HOME}/.cache/wal
-waldir=${HOME}/usr/pics/wallpapers
-arcdir=${HOME}/usr/pics/wallpapers/archive
+cachdir=~/.cache/wal
+waldir=~/usr/pics/wallpapers
+arcdir=~/usr/pics/wallpapers/archive
 
 usage() {
 	printf "%s\n" "Usage: $(basename $0) [-ha]"
