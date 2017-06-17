@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="~/usr/docs/uni/msc_itsec"
+DIR="$HOME/usr/docs/uni/msc_itsec"
 CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
 
 printf "%s\n" $CURTERM
