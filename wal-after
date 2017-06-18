@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-source "~/.cache/wal/colors.sh"
+source $COLOR_FILE
 
 set-border-colors() {
 	test -n $(pgrep "bspwm") && \
@@ -8,10 +8,16 @@ set-border-colors() {
 		bspc config normal_border_color "$color0"
 }
 
+notify_wal() {
+	FILE=$(basename `cat "$WAL_CACHE/wal"`)
+	SLEEP=2 notify "Wallpaper now '${FILE%.*}'"
+}
+
 main() {
 	sstart bar r 2> /dev/null
-	set-border-colors
 	sstart pulseborder r 2> /dev/null
+	set-border-colors
+	notify_wal
 }
 
 main > /dev/null 2>&1
