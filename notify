@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # sends first arg as notification
 
 test $# -eq 0 && exit 1
