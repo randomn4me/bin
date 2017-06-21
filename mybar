@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $COLOR_FILE
+
 usage() {
 	cat << EOF
 Usage: $(basename $0) <offset x> <name>
@@ -8,16 +10,10 @@ EOF
 
 test $# -ne 2 && usage && exit 1
 
-test -f $COLOR_FILE && source $COLOR_FILE
-
-height="$TOP_PADDING"
-font="$BAR_FONT"
-gaps="$GAPS"
-
 MON_WIDTH=$(wattr w `lsw -r`)
 TMP_WIDTH="$(( MON_WIDTH / 15 ))"
 width="${WIDTH:-$TMP_WIDTH}"
 
-geometry="${width}x$height+${1:-0}+$(( $gaps / 2))"
+geometry="${width}x$TOP_PADDING+${1:-0}+$(( GAPS / 2))"
 
-lemonbar -d -g "$geometry" -f "$font" -B "$color0" -F "$color3" -n "$2"
+lemonbar -d -g "$geometry" -f "$BAR_FONT" -B "$bg" -F "$fg" -n "$2"
