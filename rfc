@@ -2,7 +2,7 @@
 
 usage() 
 {
-	printf "%s\n" "Usage: $(basename $0) [rfcnum]"
+	printf "%s\n" "Usage: $(basename $0) <rfcnum>"
 }
 
 test $# -ne 1 && usage && exit 1
