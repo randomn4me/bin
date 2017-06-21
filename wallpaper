@@ -1,0 +1,28 @@
+#!/bin/sh
+
+WALL_FILE="$HOME/.cache/wallpaper"
+
+usage() {
+	cat << EOF
+Usage: $(basename $0) [wal]
+EOF
+}
+
+which hsetroot > /dev/null 2>&1 || \
+	(printf "No hsetroot installed\n" && exit 1)
+
+test -z $1 && hsetroot -fill `cat $WALL_FILE` && exit 0
+
+set_wp() {
+	hsetroot -fill "$1"
+	echo `readlink -f -z "$1"` > $WALL_FILE
+}
+
+if [ -f $1 ]
+then
+	echo "$1"
+	set_wp "$1"
+elif [ -d "$1" ]
+then
+	echo "choose rand wal and set-wp"
+fi
