@@ -1,0 +1,24 @@
+#!/bin/bash
+
+MPDPID=$(pidof mpd)
+STATEFILE="$HOME/.config/mpd/state"
+
+mpd_notify() {
+    notify "MPD: $@"
+}
+
+handle() {
+    status="$(mpc status | grep -o -e "playing\|paused")"
+
+    case "$status" in
+        playing) mpd_notify "$(mpc current)" ;;
+         paused) mpd_notify "paused" ;;
+              *) mpd_notify "state not recognized" ;;
+    esac
+}
+
+test -z $MPDPID && printf "mpd not running\n" && exit 1
+
+while read -r; do
+    handle
+done < <(mpc idleloop player)
