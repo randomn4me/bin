@@ -16,4 +16,4 @@ width="${WIDTH:-$TMP_WIDTH}"
 
 geometry="${width}x$TOP_PADDING+${1:-0}+$(( GAPS / 2))"
 
-lemonbar -d -g "$geometry" -f "$BAR_FONT" -B "$bg" -F "$fg" -n "$2"
+lemonbar -d -g "$geometry" -f "$BAR_FONT" -B "$fg" -F "$bg" -n "$2"
