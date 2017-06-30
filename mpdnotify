@@ -13,7 +13,7 @@ handle() {
     case "$status" in
         playing) mpd_notify "$(mpc current)" ;;
          paused) mpd_notify "paused" ;;
-              *) mpd_notify "state not recognized" ;;
+              *) mpd_notify "stopped" ;;
     esac
 }
 
