@@ -2,54 +2,38 @@
 FILE="$HOME/.todo"
 
 usage() {
-	cat << EOF
-Usage: $(basename $0) [-shn] [-a todo] [-d <line-nr>]
-EOF
-	exit 0
+    echo "Usage: $(basename $0) [-hsn] [-a todo] [-d <line-nr>]"
+    exit 1
 }
 
 add() {
-	printf "%s\n" "$1" >> "$FILE"
-	printf "todo added\n"
-	exit 0
+    test -n "$1" || usage
+    echo "$1" | tee -a $FILE 1> /dev/null
 }
 
 delete() {
-	test -n "$1" || exit 1
-	printf "todo '%s' deleted.\n" "`sed $1q $FILE`"
-	sed -i "$1d" $FILE
-	exit 0
+    test -n "$1" || usage
+    echo "todo `sed $1q $FILE` deleted."
+    sed -i "$1d" $FILE
 }
 
 number() {
-	cat "$FILE" | wc -l && exit 0
+    <$FILE wc -l
 }
 
 show() {
-	cat << EOF
-
-    ╺┳╸┏━┓╺┳┓┏━┓
-     ┃ ┃ ┃ ┃┃┃ ┃
-     ╹ ┗━┛╺┻┛┗━┛
-    
-`test -f "${FILE}" && nl -s ": " $FILE || printf "    no todo"`
-
-EOF
-	exit 0
+    <$FILE nl
 }
 
 main() {
-	while getopts "nsha:d:" opt; do
-		case "$opt" in
-			"n")	number ;;
-			"s")	show ;;
-			"h")	usage ;;
-			"a")	add "$OPTARG" ;;
-			"d")	delete "$OPTARG" ;;
-			"?")	usage ;;
-		esac
-	done
-	show
+    case "$1" in
+        -n) number ;;
+        -s) show ;;
+      -h|?) usage ;;
+        -a) add "$2" ;;
+        -d) delete "$2" ;;
+         *) show
+    esac
 }
 
 main "$@"
