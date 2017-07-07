@@ -30,23 +30,13 @@ create_random() {
 	SESSION_NAME="random"
 
 	tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
-	tmux split-window -v -p 25 -t $SESSION_NAME "cava"
+	tmux split-window -v -p 33 -t $SESSION_NAME "cava"
 
-	tmux select-pane -U -t $SESSION_NAME
-	tmux split-window -h -p 45 "ncmpcpp --screen browser"
-
-	tmux select-pane -D -t $SESSION_NAME
-	tmux split-window -h -p 35 -t $SESSION_NAME
-	tmux clock-mode -t $SESSION_NAME
-
-	tmux select-pane -U -t $SESSION_NAME
-	tmux select-pane -L
-	
 	attach $SESSION_NAME
 }
 
 case "$1" in
-	uni)    attach $1 || create_uni ;;
-	random) attach $1 || create_random ;;
-	*)      usage ;;
+    u*) attach $1 || create_uni ;;
+    r*) attach $1 || create_random ;;
+     *) usage ;;
 esac
