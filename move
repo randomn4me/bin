@@ -17,7 +17,7 @@ RESIZE=0
 
 wtp_xy() {
     wtp $1 $2 $WW $WH $WID
-    wmp -a $1 $2
+    wmp -a $(( $1 + WW / 2 )) $(( $2 + WH / 2 ))
 }
 
 north() {
