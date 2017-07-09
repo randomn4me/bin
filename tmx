@@ -1,38 +1,40 @@
 #!/bin/sh
 
 usage() {
-	cat << EOF
+    cat << EOF
 Usage: $(basename $0) <uni|random>
 EOF
 }
 
 attach() {
-	tmux attach-session -t "$1" 2> /dev/null
+    tmux attach-session -t "$1" 2> /dev/null
 }
 
 create_uni() {
-	SESSION_NAME="uni"
-	DIR="`curterm`"
-	
-	test -z $DIR && printf "Error loading dir\n" && exit 1
+    SESSION_NAME="uni"
+    DIR="`curterm`"
+    
+    test -z $DIR && printf "Error loading dir\n" && exit 1
 
-	tmux new-session -d -n "misc" -s "$SESSION_NAME"
+    tmux new-session -d -n "misc" -s "$SESSION_NAME"
 
-	for d in `ls -d $DIR/*`; do
-		cd $d
-		tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
-	done
+    for d in `ls -d $DIR/*`; do
+        cd $d
+        tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
+    done
 
-	attach $SESSION_NAME
+    attach $SESSION_NAME
 }
 
 create_random() {
-	SESSION_NAME="random"
+    SESSION_NAME="random"
 
-	tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
-	tmux split-window -v -p 33 -t $SESSION_NAME "cava"
+    tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
+    tmux split-window -v -p 33 -t $SESSION_NAME "cava"
 
-	attach $SESSION_NAME
+    tmux select-pane -U -t $SESSION_NAME
+
+    attach $SESSION_NAME
 }
 
 case "$1" in
