@@ -2,4 +2,8 @@
 
 DIR="$HOME/usr/pics/photos/kids"
 
-meh $DIR/* &
+cd "$DIR"
+
+while :; do
+    ls | sort -R | head -1; sleep 60s
+done | meh -ctl &
