@@ -13,8 +13,6 @@ ROOT=$(lsw -r)
 SW=$(wattr w $ROOT)
 SH=$(wattr h $ROOT)
 
-RESIZE=0
-
 wtp_xy() {
     wtp $1 $2 $WW $WH $WID
     wmp -a $(( $1 + WW / 2 )) $(( $2 + WH / 2 ))
