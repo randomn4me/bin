@@ -11,6 +11,8 @@ TMP_LOCK=/tmp/tmp_lock.png
 LOCK=~/.config/lockicon.png
 RES=$(xrandr --current | grep '*' | uniq | awk '{print $1}')
 
+mpc stop
+
 convert $LOCK -fill $color1 +opaque none $TMP_LOCK
 
 ffmpeg -f x11grab -video_size $RES -y -i $DISPLAY -i $TMP_LOCK -filter_complex "boxblur=20,overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" -vframes 1 $IMAGE
