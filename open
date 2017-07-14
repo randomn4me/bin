@@ -1,0 +1,25 @@
+#!/bin/sh
+
+open() {
+    case "$1" in
+        *.md|*.c|*.py)
+            urxvt -e /bin/sh -c "vim "$1""
+            ;;
+        *.png|*.jpg|*.jpeg)
+            meh "$1"
+            ;;
+        *.pdf)
+            mupdf "$1"
+            ;;
+        *.mp4)
+            mpv "$1"
+            ;;
+        *)
+            echo "Falling back to xdg-open" > /dev/stderr
+            xdg-open "$1" > /dev/null
+    esac
+}
+
+test -f "$1" || echo "Usage: $(basename $0) <1>"
+
+open "$1" &
