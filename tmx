@@ -28,14 +28,24 @@ create() {
             tmux select-pane -U -t $SESSION_NAME
             tmux set-option -t $SESSION_NAME status off
             ;;
+        coding)
+            tmux new-session -d -n "c" -s $SESSION_NAME
+            tmux split-window -v -p 33 -t $SESSION_NAME
+            tmux select-pane -U -t $SESSION_NAME
+            ;;
+        irssi)
+            tmux new-session -d -n "irssi" -s $SESSION_NAME "irssi"
+            ;;
         *)
             echo "No such session defined" > /dev/stderr
     esac
 }
 
 case "$1" in
-    u*) export SESSION_NAME="uni" ;;
-    m*) export SESSION_NAME="music" ;;
+    uni)    export SESSION_NAME="uni" ;;
+    m*)  export SESSION_NAME="music" ;;
+    c*)     export SESSION_NAME="coding" ;;
+    i*)     export SESSION_NAME="irssi" ;;
      *) usage ;;
 esac
 
