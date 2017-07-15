@@ -2,7 +2,7 @@
 
 usage() {
     cat << EOF
-Usage: $(basename $0) <uni|random>
+Usage: $(basename $0) <uni|music|coding|irssi>
 EOF
 }
 
