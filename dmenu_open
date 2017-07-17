@@ -1,0 +1,11 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $(basename $0) <dir> <pattern> <name>"
+}
+
+test "$#" != "3" && usage && exit 1
+
+cd $1
+
+open "$(find * -type f -name "$2" | menu "-q -p "$3"")" > /dev/null 2>&1
