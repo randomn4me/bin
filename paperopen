@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $(curterm -p)
-export WIDTH="$(( $(wattr w `lsw -r`) / 3 ))"
+export WIDTH="$(( $(wattr w `lsw -r`) / 2 ))"
 
-xdg-open "$(find * -type f -name "*.pdf" | menu "-q -p $(basename $0)")" > /dev/null 2>&1
+dmenu_open "$HOME/usr/docs/uni/paper" "*.pdf" "$(basename $0)"
+
