@@ -12,3 +12,5 @@ for d in $DIRS; do
         ln -sf "$paper" .
     done
 done
+
+find . -xtype l -delete
