@@ -13,17 +13,8 @@ ROOT=$(lsw -r)
 SW=$(wattr w $ROOT)
 SH=$(wattr h $ROOT)
 
-wtp_xy() {
-    wtp $1 $2 $WW $WH $WID
-    wmp -a $(( $1 + WW / 2 )) $(( $2 + WH / 2 ))
-}
-
-north() {
-    wtp_xy $WX $((TOP_PADDING + GAPS)) 
-}
-
 south() {
-    wtp_xy $WX $((SH -WH -GAPS - 2 * BORDER_WIDTH))
+    wtp_xy $WX 
 }
 
 east() {
@@ -36,22 +27,21 @@ west() {
 
 case $1 in
     c)
-        wtp_xy $(((SW - WW)/2)) $(((SH - WH)/2))
-        ;;
+        WX=$(((SW - WW)/2))
+        WY=$(((SH - WH)/2)) ;;
     tl)
-        wtp_xy $GAPS $((TOP_PADDING + GAPS))
-        ;;
+        WX=$GAPS 
+        WY=$((TOP_PADDING + GAPS)) ;;
     tr)
-        wtp_xy $((SW - WW - GAPS - 2 * BORDER_WIDTH)) $((TOP_PADDING + GAPS))
-        ;;
+        WX=$((SW - WW - GAPS - 2 * BORDER_WIDTH))
+        WY=$((TOP_PADDING + GAPS)) ;;
     bl)
-        wtp_xy $GAPS $((SH - WH - GAPS - 2 * BORDER_WIDTH))
-        ;;
+        WX=$GAPS
+        WY=$((SH - WH - GAPS - 2 * BORDER_WIDTH)) ;;
     br)
-        wtp_xy $((SW - WW - GAPS - 2 * BORDER_WIDTH)) $((SH - WH - GAPS - 2 * BORDER_WIDTH))
-        ;;
-    n)  north ;;
-    s)  south ;;
-    w)  west ;;
-    e)  east ;;
+        WX=$((SW - WW - GAPS - 2 * BORDER_WIDTH))
+        WY=$((SH - WH - GAPS - 2 * BORDER_WIDTH)) ;;
 esac
+
+wtp $WX $WY $WW $WH $WID
+wmp -a $(( WX + WW / 2 )) $(( WY + WH / 2 ))
