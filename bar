@@ -7,7 +7,7 @@ newmails() {
 }
 
 vol() {
-	test "$(volume -s)" = "on" && volume || echo "!$(volume)"
+	test "$(volume s)" = "on" && volume || echo "!$(volume)"
 }
 
 # left bar
