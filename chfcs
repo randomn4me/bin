@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# z3bra - 2014 (c) wtfpl
+# window focus wrapper that sets borders and can focus next/previous window
+
+test -f $COLOR_FILE && source $COLOR_FILE
+
+BW=${BORDER_WIDTH:-2} # border width
+ACTIVE=$fg            # active border color
+INACTIVE=$bg          # inactive border color
+
+# get current window id
+CUR=$(pfw || echo NONE)
+
+usage() {
+    echo "usage: $(basename $0) <next|prev|wid>" >&2
+    exit 1
+}
+
+setborder() {
+    ROOT=$(lsw -r)
+
+    # check that window exists and shouldn't be ignored
+    wattr $2 || return
+    wattr o $2 && return
+
+    case $1 in
+        active)
+            chwb -s $BW -c "0x${ACTIVE:1}" $2
+            ;;
+        inactive)
+            chwb -s $BW -c "0x${INACTIVE:1}" $2
+            ;;
+    esac
+}
+
+hide() {
+    setborder inactive $wid
+    mapw -u $wid
+    exit 0
+}
+
+prev() {
+    echo "to be implemented"
+}
+
+next() {
+    echo "to be implemented"
+}
+
+while getopts "h:npw:" opt; do
+    case $opt in
+        h)  wattr $OPTARG && wid=$OPTARG || exit 1
+            hide ;;
+        w)  wattr $OPTARRG && wid=$OPTARG ;;
+        n)  wid=$(lsw|grep -v $CUR|sed '1 p;d') ;;
+        p)  wid=$(lsw|grep -v $CUR|sed '$ p;d') ;;
+        *)  usage ;;
+    esac
+done
+
+# exit if we can't find another window to focus
+test -z "$wid" && { echo "$(basename $0): no window to focus" >&2; exit 1; }
+
+wtf $wid                # set focus on it
+chwso -r $wid           # raise windows
+setborder inactive $CUR # set inactive border on current window
+setborder active $wid   # activate the new window
+chwb -s $BW $wid
+
+exit 0

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+while IFS=: read ev wid; do
+    case $ev in
+        # window creation
+        16) wattr o $wid || move c $wid
+            ;;
+
+        # focus next window when deleting focused window
+        18) wattr $(pfw) || vroum prev 2>/dev/null
+            ;;
+
+        # mapping requests
+        19) wattr o $wid || vroum $wid &
+            ;;
+
+        # entering window
+        7) wattr o $wid || wtf $wid ;;
+    esac
+done

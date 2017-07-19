@@ -1,0 +1,65 @@
+#!/bin/sh
+# inspiration by z3bras maximize
+
+usage() {
+    printf "Usage: $(basename $0) <x|y|f> <wid>\n"
+    exit 1
+}
+
+case $1 in
+    x) MAX=x ;;
+    y) MAX=y ;;
+    f) MAX=f ;;
+    *) usage ;;
+esac
+
+test -n "$2" && WID=$2 || usage
+
+RSZ_DIR=/tmp/.rszdir
+BW=$(wattr b $WID)
+WX=$(wattr x $WID)
+WY=$(wattr y $WID)
+WW=$(wattr w $WID)
+WH=$(wattr h $WID)
+
+# get screen width and height
+ROOT=$(lsw -r)
+SW=$(wattr w $ROOT)
+SH=$(wattr h $ROOT)
+
+MAX_X=$((SW - 2 * GAPS - 2 * BW))
+MAX_Y=$((SH - 2 * GAPS - 2 * BW - TOP_PADDING))
+
+test -d $RSZ_DIR || mkdir -p $RSZ_DIR
+
+is_maxed() {
+    case $MAX in
+        x) test $(wattr w $WID) -eq $MAX_X && return 0 ;;
+        y) test $(wattr h $WID) -eq $MAX_Y && return 0 ;;
+        f) test "$(wattr wh $WID)" = "$MAX_X $MAX_Y" && return 0 ;;
+    esac
+}
+
+expand() {
+    wattr xywhi $WID > $RSZ_DIR/$WID
+    case $MAX in
+        x)  WX=$GAPS
+            WW=$MAX_X ;;
+        y)  WY=$((TOP_PADDING + GAPS))
+            WH=$MAX_Y ;;
+        f)  WX=$GAPS
+            WY=$((TOP_PADDING + GAPS))
+            WW=$MAX_X
+            WH=$MAX_Y ;;
+        *)  usage ;;
+    esac
+    wtp $WX $WY $WW $WH $WID
+}
+
+collapse() {
+    test -f $RSZ_DIR/$WID || return
+    wtp $(grep $WID $RSZ_DIR/$WID)
+    rm $RSZ_DIR/$WID
+}
+
+is_maxed && collapse || expand
