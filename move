@@ -1,7 +1,13 @@
 #!/bin/sh
 
+usage() {
+    printf "Usage: $(basename $0) <tl|tr|c|bl|br> <wid>\n"
+    exit 1
+}
+
+test -n "$2" && WID=$2 || usage
+
 # get current window id, width and height
-WID=$(pfw)
 WW=$(wattr w $WID)
 WH=$(wattr h $WID)
 WX=$(wattr x $WID)
@@ -27,8 +33,8 @@ west() {
 
 case $1 in
     c)
-        WX=$(((SW - WW)/2))
-        WY=$(((SH - WH)/2)) ;;
+        WX=$(((SW - WW) / 2))
+        WY=$(((SH - WH) / 2)) ;;
     tl)
         WX=$GAPS 
         WY=$((TOP_PADDING + GAPS)) ;;
@@ -41,6 +47,8 @@ case $1 in
     br)
         WX=$((SW - WW - GAPS - 2 * BORDER_WIDTH))
         WY=$((SH - WH - GAPS - 2 * BORDER_WIDTH)) ;;
+    *)
+        usage ;;
 esac
 
 wtp $WX $WY $WW $WH $WID
