@@ -40,19 +40,11 @@ hide() {
     exit 0
 }
 
-prev() {
-    echo "to be implemented"
-}
-
-next() {
-    echo "to be implemented"
-}
-
 while getopts "h:npw:" opt; do
     case $opt in
         h)  wattr $OPTARG && wid=$OPTARG || exit 1
             hide ;;
-        w)  wattr $OPTARRG && wid=$OPTARG ;;
+        w)  wattr $OPTARG && wid=$OPTARG ;;
         n)  wid=$(lsw|grep -v $CUR|sed '1 p;d') ;;
         p)  wid=$(lsw|grep -v $CUR|sed '$ p;d') ;;
         *)  usage ;;
