@@ -5,7 +5,7 @@ usage() {
     exit 1
 }
 
-test -n "$2" && WID=$2 || usage
+test -n "$2" && WID=$2 || WID=$(pfw)
 
 # get current window id, width and height
 WW=$(wattr w $WID)
