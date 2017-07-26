@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export WIDTH=$(( $(wattr w `lsw -r`) / 2 ))
+dmenu_open $HOME/usr/docs/books "*.pdf" "books"

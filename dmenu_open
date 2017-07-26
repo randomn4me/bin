@@ -8,4 +8,4 @@ test "$#" != "3" && usage && exit 1
 
 cd "$1"
 
-open "$(find * -type f -o -type l -iname "$2" | menu "-q -p "$3"")" > /dev/null 2>&1
+open "$(find * -iname "$2" -a -type f -o -type l | menu "-q -p "$3"")" > /dev/null 2>&1
