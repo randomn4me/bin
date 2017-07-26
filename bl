@@ -1,19 +1,17 @@
 #!/bin/sh
 
 usage() {
-    echo "Usage: $(basename $0) [+-ch]"
+    echo "Usage: $(basename $0) [+-ch] [num]"
 }
 
-main() {
-    case $1 in
-        +) xbacklight -inc 5 ;;
-        -) xbacklight -dec 5 ;;
-        c) printf "%2.0f\n" `xbacklight -get` ;;
-        *) usage ;;
-    esac
-}
 
 which xbacklight > /dev/null 2>&1 \
     || ( echo "xbacklight not installed" && exit 1 )
 
-main $@ &
+case $1 in
+    +) xbacklight -inc 5 ;;
+    -) xbacklight -dec 5 ;;
+    c) printf "%2.0f\n" `xbacklight -get` ;;
+    +([[:digit:]]) ) xbacklight -set $1 ;;
+    *) usage ;;
+esac
