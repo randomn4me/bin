@@ -17,4 +17,4 @@ draw()
   done
 	printf "[${out}]" 
 }
-SLEEP=1 notify "$(draw `volume` 48)"
+SLEEP=1 notify "$(draw `vol` 48)"

@@ -6,8 +6,8 @@ newmails() {
 	ls "$MAIL/new" | wc -l
 }
 
-vol() {
-	test "$(volume s)" = "on" && volume || echo "!$(volume)"
+volume() {
+	test "$(vol s)" = "on" && vol || echo "!$(vol)"
 }
 
 # left bar
