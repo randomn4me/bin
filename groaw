@@ -29,7 +29,6 @@ show_group() {
     for file in $GROOT/$1/*; do
         wid=$(basename $file)
         mapw -m $wid
-        chwso -r $wid
     done
 }
 
