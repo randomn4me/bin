@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+mpc stop &
+
+pkill cava &
+
+pkill redshift &
+pkill wendy &
+pkill unclutter &
+
+pkill xss-lock &
+
+pkill sxhkd &
+pkill bar &
+pkill cwm
