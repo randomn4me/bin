@@ -7,14 +7,16 @@ usage() {
 }
 
 add() {
-    test -n "$1" || usage
-    echo "$1" | tee -a $FILE 1> /dev/null
+    test $# -eq 0 && usage
+    echo "$@" | tee -a $FILE 1> /dev/null
 }
 
 delete() {
-    test -n "$1" || usage
-    echo "todo `sed $1q $FILE` deleted."
-    sed -i "$1d" $FILE
+    test $# -eq 0 && usage
+    for l in "$@"; do
+        echo "todo \'$(sed ${l}q $FILE)\' deleted."
+        sed -i "${l}d" $FILE
+    done
 }
 
 number() {
@@ -26,12 +28,14 @@ show() {
 }
 
 main() {
-    case "$1" in
+    opt=$1
+    shift 1
+    case "$opt" in
         -n) number ;;
         -s) show ;;
       -h|?) usage ;;
-        -a) add "$2" ;;
-        -d) delete "$2" ;;
+        -a) add "$@" ;;
+        -d) delete "$@" ;;
          *) show
     esac
 }
