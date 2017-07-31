@@ -1,0 +1,47 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: $(basename $0) <wid>"
+    exit 1
+}
+
+winname() {
+    xprop -id "$wid" WM_CLASS | cut -d\" -f 2
+}
+
+winclass() {
+    xprop -id "$wid" WM_CLASS | cut -d\" -f 4
+}
+
+test $# -eq 1 || usage
+wattr $1 && wid=$1
+
+case "$(winname)" in
+    urxvt*)
+        snap c $wid
+        groaw -a 1
+        ;;
+    mupdf)
+        groaw -a 2
+        snap tr $wid
+        ;;
+    *)
+        case "$(winclass)" in
+            Firefox)
+                groaw -a 5
+                ;;
+            qutebrowser)
+                groaw -a 5
+                ;;
+            mpv)
+                groaw -a 3
+                snap c $wid
+                ;;
+            "Signal Private Messenger")
+                groaw -a 4
+                ;;
+            *)
+                groaw -a 1
+        esac
+        ;;
+esac
