@@ -4,58 +4,45 @@ MPDPID=$(pidof mpd)
 STATEFILE="$HOME/.config/mpd/state"
 
 usage() {
-    echo "Usage: $(basename $0) [-h] [-d] [-nv]"
-    [ $VERBOSE ] && cat <<EOF
-    -h : print this help
-
+    cat << EOF
+Usage: $(basename $0) [-d] [-n]
     -d : run in daemon mode
-
     -n : notify using \`notify\`
-    -v : be more verbose
 EOF
     exit 1
 }
 
 out() {
-    printf "MPD: %s\n" "$@"
-    [ $NOTIFY ] && notify "MPD: $@"
+    [ $NOTIFY ] && notify "MPD: $(status)" || \
+        [ $DAEMON ] && printf "%-$(tput cols)s\r" "$(status)" || \
+        status
 }
 
-out_status() {
+status() {
     status="$(mpc status | grep -o -e "playing\|paused")"
 
     case "$status" in
-        playing)
-            [ $VERBOSE ] && printf "Currently playing:\n"
-            out "$(mpc current)"
-            ;;
-        paused) 
-            out "paused" 
-            ;;
-        *) 
-            out "stopped"
-            ;;
+        playing) mpc current ;;
+         paused) echo "paused" ;;
+              *) echo "stopped" ;;
     esac
 }
 
 run_daemon() {
-    [ $VERBOSE ] && printf "Starting mpdnotify in daemon mode.\n"
     while read -r; do
-        out_status
-    done < <(mpc idleloop player)
-    [ $VERBOSE ] && printf "Stopped mpdnotify.\n"
+        out status
+    done < <(mpc idleloop)
 
 }
 
 [ ! $MPDPID ] && printf "Error: MPD is not running\n" && exit 1
 
-while getopts "hdvn" opt; do
+while getopts "dnh" opt; do
     case $opt in
         d) DAEMON=true ;;
-        v) VERBOSE=true ;;
         n) NOTIFY=true ;;
         *) usage ;;
     esac
 done
 
-[ $DAEMON ] && run_daemon || out_status
+[ $DAEMON ] && run_daemon || out status
