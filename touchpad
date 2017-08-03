@@ -21,7 +21,8 @@ devdis() {
 }
 
 toggle() {
-	STATE="$(xinput list-props "$DEVICE" | grep "Enabled" | cut -d":" -f2 | grep -oE [01])"
+	STATE="$(xinput list-props "$DEVICE" | grep "Enabled" | \
+        cut -d":" -f2 | grep -oE [01])"
 
 	test "$STATE" = "0" && deven || devdis
 }
