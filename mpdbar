@@ -1,0 +1,20 @@
+#!/bin/bash
+
+MPDPID=$(pidof mpd)
+STATEFILE="$HOME/.config/mpd/state"
+
+status() {
+    status="$(mpc status | grep -o -e "playing\|paused")"
+
+    case "$status" in
+        playing) mpc current ;;
+         paused) echo "paused" ;;
+              *) echo "stopped" ;;
+    esac
+}
+
+[ ! $MPDPID ] && printf "Error: MPD is not running\n" && exit 1
+
+while :; do printf "  %s\n" "$(status | \
+    sed 's/(.*)//')"; sleep 1; done | \
+    WIDTH=300 mybar 122 "mpdbar"
