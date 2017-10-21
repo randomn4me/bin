@@ -1,0 +1,101 @@
+#!/bin/sh
+
+DEVICE="/mnt/hdd"
+REPOSITORY="${DEVICE}/backup"
+PID_FILE="/tmp/borg.running"
+MOUNTED=false
+
+export BORG_REPO=/mnt/hdd/backup
+export BORG_PASSCOMAND='pass show borg_backup'
+
+#for notifications
+export SLEEP=5s
+
+if [ -f $PID_FILE ]; then
+    printf "borg already running\n"
+    exit 1
+fi
+
+usage() {
+    cat << EOF
+Usage: $(basename $0) <help|list|files <name>|info <name>>
+EOF
+}
+
+mounting() {
+    if [ -z "$(mount | grep "${DEVICE}")" ]; then
+        notify "backup : mounting ${DEVICE}."
+        mount $DEVICE
+        MOUNTED=true
+    fi
+
+    if [ -z "$(mount | grep "${DEVICE}")" ]; then
+        notify "backup : cannot mount device."
+        exit 1
+    fi
+}
+
+list_backups() {
+    borg list $REPOSITORY
+}
+
+list_files() {
+    borg list ${REPOSITORY}::$1
+}
+
+info() {
+    borg info ${REPOSITORY}::$1
+}
+
+startbackup() {
+    notify "backup : starting"
+
+    borg create                                 \
+        --verbose                               \
+        --filter=AME                            \
+        --list                                  \
+        --compression lz4                       \
+        --exclude-caches                        \
+        --exclude-from "$HOME/etc/borg_exclude" \
+                                                \
+        ::'{now:%Y-%m-%d}'                      \
+                                                \
+        $HOME                                   \
+        /etc
+
+    notify "backup : done" 
+}
+
+startpruning() {    
+    notify "backup : start pruning"
+
+    borg prune              \
+        -v "$REPOSITORY"    \
+        --keep-daily=7      \
+        --keep-weekly=4     \
+        --keep-monthly=6
+
+    notify "backup : pruning done"
+}
+
+main() {
+    echo "" > $PID_FILE
+
+    startbackup
+    sleep 1
+    startpruning
+    test -f $PID_FILE && rm $PID_FILE
+}
+
+mounting
+
+case $1 in
+    help|-h) usage ;;
+       list) list_backups ;;
+      files) test $# -eq 2 && list_files $2 || usage ;;
+       info) test $# -eq 2 && list_files $2 || usage ;;
+          *) main & ;;
+esac
+
+[ $MOUNTED ] && umount $DEVICE && sync
+
