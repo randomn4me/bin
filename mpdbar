@@ -15,6 +15,6 @@ status() {
 
 [ ! $MPDPID ] && printf "Error: MPD is not running\n" && exit 1
 
-while :; do printf "  %s\n" "$(status | \
-    sed 's/(.*)//')"; sleep 1; done | \
-    WIDTH=300 mybar 122 "mpdbar"
+while :; do
+    printf "  %s\n" "$(status)"
+done | WIDTH=300 mybar 122 "mpdbar"

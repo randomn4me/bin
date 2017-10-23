@@ -3,29 +3,25 @@
 reset="\033[0m"
 
 color() {
-	printf "%s" "\033[3${1}m"
-}
-
-tolower() {
-	tr '[:upper:]' '[:lower:]'
+    printf "%s" "\033[3${1}m"
 }
 
 COLOR=1
 pkeyval() {
-	value=`echo $2 | tolower`
-	printf "\t$(color $COLOR)%6s$reset : %s\n" "$1" "$value"
-	test $COLOR -eq 7 && COLOR=1 || COLOR=$(( COLOR + 1 ))
+    value=`echo $2 | tr '[:upper:]' '[:lower:]'`
+    printf "\t$(color $COLOR)%6s$reset : %s\n" "$1" "$value"
+    test $COLOR -eq 7 && COLOR=1 || COLOR=$(( COLOR + 1 ))
 }
 
 myuptime() {
-	secs="`< /proc/uptime`"
-	secs="${secs/.*}"
+    secs="`< /proc/uptime`"
+    secs="${secs/.*}"
 
-	days="$(( secs / 60 / 60 / 24 ))"
-	hours="$(( secs / 60 / 60 % 24 ))"
-	mins="$(( secs / 60 % 60 ))"
+    days="$(( secs / 60 / 60 / 24 ))"
+    hours="$(( secs / 60 / 60 % 24 ))"
+    mins="$(( secs / 60 % 60 ))"
 
-	printf "%dd %dm %ds" "$days" "$hours" "$mins"
+    printf "%dd %dm %ds" "$days" "$hours" "$mins"
 }
 
 distro=`lsb_release -d | cut -d: -f2 | xargs`

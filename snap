@@ -20,7 +20,7 @@ SW=$(wattr w $ROOT)
 SH=$(wattr h $ROOT)
 
 south() {
-    wtp_xy $WX 
+    wtp_xy $WX
 }
 
 east() {
@@ -36,7 +36,7 @@ case $1 in
         WX=$(((SW - WW) / 2))
         WY=$(((SH - WH) / 2)) ;;
     tl)
-        WX=$GAPS 
+        WX=$GAPS
         WY=$((TOP_PADDING + GAPS)) ;;
     tr)
         WX=$((SW - WW - GAPS - 2 * BORDER_WIDTH))
@@ -51,5 +51,5 @@ case $1 in
         usage ;;
 esac
 
-wtp $WX $WY $WW $WH $WID
 wmp -a $(( WX + WW / 2 )) $(( WY + WH / 2 ))
+wtp $WX $WY $WW $WH $WID

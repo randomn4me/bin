@@ -1,101 +1,75 @@
 #!/bin/sh
 
-DEVICE="/mnt/hdd"
-REPOSITORY="${DEVICE}/backup"
-PID_FILE="/tmp/borg.running"
-MOUNTED=false
-
+# Setting this, so the repo does not need to be given on the commandline:
 export BORG_REPO=/mnt/hdd/backup
-export BORG_PASSCOMAND='pass show borg_backup'
 
-#for notifications
-export SLEEP=5s
+# or this to ask an external program to supply the passphrase:
+export BORG_PASSCOMMAND='pass show borg_backup'
 
-if [ -f $PID_FILE ]; then
-    printf "borg already running\n"
-    exit 1
-fi
+# some helpers and error handling:
+info() { printf "\n%s %s\n\n" "$( date )" "$*" >&2; }
+trap 'echo $( date ) Backup interrupted >&2; exit 2' INT TERM
 
-usage() {
-    cat << EOF
-Usage: $(basename $0) <help|list|files <name>|info <name>>
-EOF
-}
+backup() {
+    info "Starting backup"
 
-mounting() {
-    if [ -z "$(mount | grep "${DEVICE}")" ]; then
-        notify "backup : mounting ${DEVICE}."
-        mount $DEVICE
-        MOUNTED=true
+    # Backup the most important directories into an archive named after
+    # the machine this script is currently running on:
+
+    borg create                         \
+        --filter AME                    \
+        --list                          \
+        --stats                         \
+        --show-rc                       \
+        --compression lz4               \
+        --exclude-caches                \
+        --exclude $HOME/.vim/backup     \
+        --exclude $HOME/.vim/swap       \
+        --exclude $HOME/.vim/undo       \
+        --exclude $HOME/.cache          \
+        --exclude *~                    \
+        --exclude *.pyc                 \
+        \
+        ::'{now:%Y-%m-%d}'              \
+        /etc                            \
+        /home                           \
+
+        backup_exit=$?
+
+    info "Pruning repository"
+
+    # Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
+    # archives of THIS machine. The '{hostname}-' prefix is very important to
+    # limit prune's operation to this machine's archives and not apply to
+    # other machines' archives also:
+
+    borg prune                          \
+        --list                          \
+        --prefix '{hostname}-'          \
+        --show-rc                       \
+        --keep-daily    7               \
+        --keep-weekly   4               \
+        --keep-monthly  6               \
+
+        prune_exit=$?
+
+    # use highest exit code as global exit code
+    global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
+
+    if [ ${global_exit} -eq 1 ];
+    then
+        info "Backup and/or Prune finished with a warning"
     fi
 
-    if [ -z "$(mount | grep "${DEVICE}")" ]; then
-        notify "backup : cannot mount device."
-        exit 1
+    if [ ${global_exit} -gt 1 ];
+    then
+        info "Backup and/or Prune finished with an error"
     fi
+
+    exit ${global_exit}
 }
-
-list_backups() {
-    borg list $REPOSITORY
-}
-
-list_files() {
-    borg list ${REPOSITORY}::$1
-}
-
-info() {
-    borg info ${REPOSITORY}::$1
-}
-
-startbackup() {
-    notify "backup : starting"
-
-    borg create                                 \
-        --verbose                               \
-        --filter=AME                            \
-        --list                                  \
-        --compression lz4                       \
-        --exclude-caches                        \
-        --exclude-from "$HOME/etc/borg_exclude" \
-                                                \
-        ::'{now:%Y-%m-%d}'                      \
-                                                \
-        $HOME                                   \
-        /etc
-
-    notify "backup : done" 
-}
-
-startpruning() {    
-    notify "backup : start pruning"
-
-    borg prune              \
-        -v "$REPOSITORY"    \
-        --keep-daily=7      \
-        --keep-weekly=4     \
-        --keep-monthly=6
-
-    notify "backup : pruning done"
-}
-
-main() {
-    echo "" > $PID_FILE
-
-    startbackup
-    sleep 1
-    startpruning
-    test -f $PID_FILE && rm $PID_FILE
-}
-
-mounting
 
 case $1 in
-    help|-h) usage ;;
-       list) list_backups ;;
-      files) test $# -eq 2 && list_files $2 || usage ;;
-       info) test $# -eq 2 && list_files $2 || usage ;;
-          *) main & ;;
+    s) borg list $BORG_REPO ;;
+    b) backup ;;
 esac
-
-[ $MOUNTED ] && umount $DEVICE && sync
-

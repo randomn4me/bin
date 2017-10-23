@@ -24,6 +24,9 @@ case "$1" in
 		rm ${PID}
 		printf "%s\n" "vpn disconnected"
 		;;
+    status|s)
+        [ -f ${PID} ] && echo "Up" || echo "Down"
+        ;;
 	*)
 		printf "%s\n" "Usage: $(basename $0) <1|0>" > /dev/stderr
 		exit 1

@@ -14,7 +14,7 @@ add() {
 delete() {
     test $# -eq 0 && usage
     for l in "$@"; do
-        echo "todo \'$(sed ${l}q $FILE)\' deleted."
+        echo "todo '$(sed ${l}q $FILE)' deleted."
         sed -i "${l}d" $FILE
     done
 }

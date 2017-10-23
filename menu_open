@@ -1,5 +1,5 @@
 #!/bin/sh
-MENUS="lcthwv\npaper_open\nbook_open"
+MENUS="lcthwv\npaperopen\nbook_open"
 
 SINGLE_MENU=`printf $MENUS | sort | menu`
 
