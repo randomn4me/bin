@@ -3,7 +3,7 @@
 DEVICE="$(xinput list --name-only | grep -E "[Tt]ouchpad")"
 
 usage() {
-	cat << EOF
+    cat << EOF
 Usage: $(basename $0) [on|1] [off|0] [toggle|t]
 Options:
   on|1      : Enable touchpad 
@@ -13,26 +13,30 @@ EOF
 }
 
 deven() {
-	xinput enable "$DEVICE"
+    xinput enable "$DEVICE"
 }
 
 devdis() {
-	xinput disable "$DEVICE"
+    xinput disable "$DEVICE"
 }
 
 toggle() {
-	STATE="$(xinput list-props "$DEVICE" | grep "Enabled" | \
+    STATE="$(xinput list-props "$DEVICE" | grep "Device Enabled" | \
         cut -d":" -f2 | grep -oE [01])"
 
-	test "$STATE" = "0" && deven || devdis
+    if [ "$STATE" = "0" ]; then
+        deven
+    else
+        devdis
+    fi
 }
 
 test -z $# && usage && exit 1
 
 case "$1" in
-	"on"|"1")				deven ;;
-	"off"|"0")			devdis ;;
-	"t"|"toggle")		toggle ;;
-	*)							usage
+    "on"|"1")       deven ;;
+    "off"|"0")      devdis ;;
+    "t"|"toggle")   toggle ;;
+    *)              usage ;;
 esac
 
