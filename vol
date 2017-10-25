@@ -22,11 +22,11 @@ which amixer > /dev/null 2>&1 \
 test "$#" -eq 0 && echo "$(level)" && exit 0
 
 case "$1" in
-    s)              state ;;
-    h)              usage ;;
-    l)              level ;;
-    t)              amixer set "$CHANNEL" toggle > /dev/null ;;
-    +)              amixer set "$CHANNEL" 5%+ > /dev/null ;;
-    -)              amixer set "$CHANNEL" 5%- > /dev/null ;;
-    +([[:digit:]])) amixer set "$CHANNEL" ${1}% > /dev/null ;;
+    s)  state ;;
+    h)  usage ;;
+    l)  level ;;
+    t)  pamixer -t > /dev/null ;;
+    +)  pamixer --increase 5 > /dev/null ;;
+    -)  pamixer --decrease 5 > /dev/null ;;
+    *)  usage ;;
 esac
