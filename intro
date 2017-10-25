@@ -4,7 +4,7 @@ out() {
     printf "%53s\n" "$1"
 }
 
-test -f $HOME/.$USER && cat $HOME/etc/r4ndom
+test -f $HOME/etc/r4ndom && cat $HOME/etc/r4ndom
 out
 out "Hi $USER"
 out "You have `ls $MAIL/new | wc -l` new mails"
