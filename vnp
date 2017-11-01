@@ -1,0 +1,9 @@
+#!/bin/sh
+# view new photos
+
+DIR=~/usr/pics/new
+TRASH=$DIR/trash
+
+[ ! -d $TRASH ] && mkdir $TRASH
+
+meh ${DIR}/*.JPG | xargs -I f mv f $TRASH

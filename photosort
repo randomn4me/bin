@@ -4,7 +4,7 @@ PHOTODIR=~/usr/pics/photos
 
 usage() {
     cat << EOF
-Usage: $(basename $0) [hd] <dir>
+Usage: $(basename $0) -[hr] <dir>
     r: run the sorting - default is dummy run to check what will happen
     h: help
 EOF
@@ -15,20 +15,30 @@ err() {
     echo "$@" > /dev/stderr
 }
 
-date_by_file() {
+get_date() {
     DATE=$(file "$1" | grep -o '[0-9]\{4\}:[0-9]\{2\}')
+
+    if [ -z $DATE ]; then
+        case $(echo "$1" | grep -o '[A-Za-z]*' | head -n1) in
+            IMG) DATE=$(echo "$1" | grep -o '[0-9]\{6\}' | \
+                head -n1 | sed 's/.\{4\}/&:/') ;;
+            signal) DATE=$(echo "$1" | grep -o '[0-9]*' | \
+                head -n2 | tr -d '\n' | sed 's/.\{4\}/&:/') ;;
+        esac
+    fi
 }
 
-# date_by_name() {
-#     case $(echo "$1" | grep -o '[A-Za-z]' | head -n1) in
-#         IMG) grep -o '[0-9]\{6\}' | head -n1 | sed 's/.\{4\}/&:/' ;;
-#         signal) usage ;;
-#     esac
-# }
+moving() {
+    local FILE="$1"
+    mv ${FILE%%.*}.* "$NEWDIR" && echo "moved $FILE.* to $NEWDIR"
+}
 
 sorting() {
-    for f in $(ls "$DIR"); do
-        date_by_file "$f"
+    echo "start sorting"
+    for f in $(ls .); do
+        [ ! -f $f ] && continue
+
+        get_date "$f"
         [ -z $DATE ] && err "not sorted: $f" && continue
 
         YEAR=$(echo $DATE | cut -d: -f1)
@@ -36,11 +46,11 @@ sorting() {
 
         NEWDIR="$PHOTODIR"/${YEAR}_${MONTH}
         if [ $RUN ]; then
-            mkdir "$NEWDIR" > /dev/null 2>&1
-            mv "$f" "$NEWDIR" && echo "moved $f to $NEWDIR"
+            [ ! -d $NEWDIR ] && mkdir "$NEWDIR" > /dev/null 2>&1
+            moving "$f"
         else
             [ ! -d $NEWDIR ] && echo "creating $NEWDIR"
-            echo "moving $f to $NEWDIR"
+            echo "moving ${f%%.*}.* to $NEWDIR"
         fi
     done
 }
@@ -54,6 +64,6 @@ done
 
 shift $((OPTIND - 1))
 
-[ ! -d "$1" ] && usage || DIR="$1"
+[ ! -d "$1" ] && usage || cd "$1"
 
 sorting

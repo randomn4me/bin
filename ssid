@@ -1,0 +1,5 @@
+#!/bin/bash
+
+STATUS=$(iw dev wlan0 link)
+
+grep SSID <<< "$STATUS" | cut -d: -f2 | xargs

@@ -1,0 +1,7 @@
+#!/bin/sh
+# move new photos
+
+DIR=~/usr/pics/new
+MOUNT_POINT=/mnt
+
+find "$MOUNT_POINT" -type f \( -name '*.JPG' -o -name '*.CR2' \) -exec mv -v {} $DIR \;

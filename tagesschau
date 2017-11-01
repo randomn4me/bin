@@ -25,7 +25,7 @@ startvid() {
     esac
 }
 
-test -z "$(iwgetid)" && printf "%s\n" "No network" > /dev/stderr && exit 1
+test -z "$(ssid)" && printf "%s\n" "No network" > /dev/stderr && exit 1
 
 case $1 in
     s|-s)   startvid $SHORT ;;

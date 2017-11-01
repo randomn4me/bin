@@ -21,7 +21,7 @@ myuptime() {
     hours="$(( secs / 60 / 60 % 24 ))"
     mins="$(( secs / 60 % 60 ))"
 
-    printf "%dd %dm %ds" "$days" "$hours" "$mins"
+    printf "%dd %dh %dm" "$days" "$hours" "$mins"
 }
 
 distro=`lsb_release -d | cut -d: -f2 | xargs`

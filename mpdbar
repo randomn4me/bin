@@ -17,4 +17,5 @@ status() {
 
 while :; do
     printf "  %s\n" "$(status)"
+    sleep 1
 done | WIDTH=300 mybar 122 "mpdbar"
