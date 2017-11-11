@@ -3,10 +3,10 @@
 res=$(printf "logout\nstandby\nreboot\nshutdown" | menu "-p $(basename $0)")
 
 case "$res" in
-	"logout")		ownlogout ;;
-	"standby")	systemctl hibernate ;;
-	"reboot")		systemctl reboot ;;
-	"shutdown")	systemctl poweroff ;;
+    "logout")   ownlogout ;;
+    "standby")  systemctl hibernate ;;
+    "reboot")   systemctl reboot ;;
+    "shutdown") systemctl poweroff ;;
 esac
 
 exit 0

@@ -6,8 +6,16 @@ export BORG_REPO=/mnt/hdd/backup
 # or this to ask an external program to supply the passphrase:
 export BORG_PASSCOMMAND='pass show borg_backup'
 
+usage() {
+    echo "Usage: $(basename $0) [bsh]" > /dev/stderr
+    exit 1
+}
+
 # some helpers and error handling:
-info() { printf "\n%s %s\n\n" "$( date )" "$*" >&2; }
+info() { 
+    printf "\n%s %s\n\n" "$( date )" "$*" >&2
+}
+
 trap 'echo $( date ) Backup interrupted >&2; exit 2' INT TERM
 
 backup() {
@@ -70,6 +78,7 @@ backup() {
 }
 
 case $1 in
-    s) borg list $BORG_REPO ;;
     b) backup ;;
+    s) borg list $BORG_REPO ;;
+    *) usage ;;
 esac

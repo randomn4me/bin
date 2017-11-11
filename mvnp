@@ -1,7 +1,15 @@
 #!/bin/sh
 # move new photos
 
-DIR=~/usr/pics/new
+PICS=~/usr/pics
+NEW=$PICS/new
 MOUNT_POINT=/mnt
 
-find "$MOUNT_POINT" -type f \( -name '*.JPG' -o -name '*.CR2' \) -exec mv -v {} $DIR \;
+mkdir -p $NEW
+
+find "$MOUNT_POINT" \
+    -type f \
+    \( -name '*.JPG' -o -name '*.CR2' \) \
+    -exec mv {} $NEW \;
+
+fdupes -rqNA $PICS

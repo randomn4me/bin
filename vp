@@ -4,6 +4,10 @@
 DIR=~/usr/pics/new
 TRASH=$DIR/trash
 
+if [ ! -z "$1" ] && [ -d "$1" ]; then
+    DIR="$1"
+fi
+
 [ ! -d $TRASH ] && mkdir $TRASH
 
 meh ${DIR}/*.JPG | xargs -I f mv f $TRASH

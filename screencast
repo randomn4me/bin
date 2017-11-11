@@ -8,11 +8,11 @@ MW=$(wattr w $RM)
 MH=$(wattr h $RM)
 
 ffmpeg -f x11grab \
-       -r 30 \
-			 -s ${MW}x${MH} \
-			 -loglevel quiet \
-			 -i :0.0 \
-			 -vcodec libx264 \
-			 -preset ultrafast \
-			 -threads 0 \
-			 -y "$DIR/$DATE.mkv"
+    -r 30 \
+    -s ${MW}x${MH} \
+    -loglevel quiet \
+    -i :0.0 \
+    -vcodec libx264 \
+    -preset ultrafast \
+    -threads 0 \
+    -y "$DIR/$DATE.mkv"

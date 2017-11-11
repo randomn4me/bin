@@ -1,29 +1,29 @@
 #!/bin/bash
 
 usage() {
-	cat <<EOF
+    cat <<EOF
 usage: $(basename $0) [-hlst]
-	-h : print this help
-	-l : print battery percentage (default)
-	-s : print battery state
-	-t : print remaining time
+    -h : print this help
+    -l : print battery percentage (default)
+    -s : print battery state
+    -t : print remaining time
 EOF
 }
 
 level () {
-	printf "%s\n" "${BATC}"
+    printf "%s\n" "${BATC}"
 }
 
 state () {
-	printf "%s\n" "${BATS}"
+    printf "%s\n" "${BATS}"
 }
 
 resttime () {
-	test $BATS = "Charging" && printf "%s\n" $BATS && exit 0
-	HOUR="$(( $BATEN / $BATPN ))"
-	MIN=$(bc -l <<< "(($BATEN / $BATPN) - $HOUR) * 60")
-	
-	printf "%02d:%02.0f\n" "$HOUR" "$MIN"
+    test $BATS = "Charging" && printf "%s\n" $BATS && exit 0
+    HOUR="$(( $BATEN / $BATPN ))"
+    MIN=$(bc -l <<< "(($BATEN / $BATPN) - $HOUR) * 60")
+
+    printf "%02d:%02.0f\n" "$HOUR" "$MIN"
 }
 
 BATN=$(ls /sys/class/power_supply/ | grep BAT)
@@ -37,8 +37,8 @@ BATEN=$(cat $BATPATH/energy_now)
 BATPN=$(cat $BATPATH/power_now)
 
 case $1 in
-	-h) usage ;;
-	-s) state ;;
-	-t) resttime ;;
-	 *) level ;;
+    -h) usage ;;
+    -s) state ;;
+    -t) resttime ;;
+     *) level ;;
 esac

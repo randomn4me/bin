@@ -1,0 +1,77 @@
+#!/bin/bash
+
+USER=$(pass show phonenumber)
+CONTACTS=${XDG_CONFIG_HOME:-~/.config}/signal/contacts
+
+err() {
+    echo $@ > /dev/stderr
+    exit 1
+}
+
+usage() {
+    err "Usage: $(basename $0) [-h] [-a file] <receiver> <msg>"
+}
+
+read-contacts() {
+    while read -r f; do
+        if [[ -z $f ]]; then continue; fi
+
+        TYPE=$(echo "$f" | cut -d\; -f1)
+        NAME=$(echo "$f" | cut -d\; -f2)
+        NUMBER=$(echo "$f" | cut -d\; -f3)
+
+        case "$TYPE" in
+            contact)    contacts[${NAME}]="${NUMBER}" ;;
+            group)      groups[${NAME}]="${NUMBER}" ;;
+        esac
+    done < $CONTACTS
+}
+
+if which signal-cli > /dev/null 2>&1 ; then : ; else
+    err "signal-cli not in PATH"
+fi
+
+if [[ ! -f $CONTACTS ]]; then
+    err "No contacts file"
+fi
+
+if [[ -z $USER ]]; then
+    err "No user given"
+fi
+
+while getopts 'ha:c' opt; do
+    case $opt in
+        a)
+            if [[ -f $OPTARG ]]; then
+                attachment="-a $OPTARG"
+            else
+                usage
+            fi
+            ;;
+        c)  column -s \; -t $CONTACTS
+            exit 0
+            ;;
+        *)  usage ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if [[ $# < 2 ]]; then
+    usage
+fi
+
+declare -A contacts groups
+read-contacts
+
+if [[ ${contacts[$1]} ]]; then
+    receiver=(${contacts[$1]})
+elif [[ ${groups[$1]} ]]; then
+    receiver=('-g' "${groups[$1]}")
+else
+    err "Receiver unknown"
+fi
+
+shift 1
+
+signal-cli -u ${USER} send -m "$@" "${receiver[@]}" ${attachment}

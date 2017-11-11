@@ -7,4 +7,5 @@ out() {
 test -f $HOME/etc/r4ndom && cat $HOME/etc/r4ndom
 out
 out "Hi $USER"
+out "$(todo -n) todos left"
 out "You have `ls $MAIL/new | wc -l` new mails"

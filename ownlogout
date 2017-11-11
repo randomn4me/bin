@@ -12,4 +12,5 @@ pkill xss-lock &
 
 pkill sxhkd &
 pkill bar &
-pkill cwm
+pkill cwm &
+pkill bspwm &

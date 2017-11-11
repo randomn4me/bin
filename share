@@ -1,0 +1,40 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: $(basename $0) <s|t> <file>" > /dev/stderr
+    exit 1
+}
+
+telegram() {
+    telegram-cli -v 2 -W -e "send_photo" "Freizeitunternehmungen_:-)" "$1"
+}
+
+signal() {
+    groups=(familie terribly-funny informatiker)
+    for group in ${groups[@]}; do
+        echo "\tSharing with $group"
+        ~/bin/signal -a "$1" $group "shared photo"
+    done
+}
+
+share() {
+    case $SINK in
+        s)  signal $1 ;;
+        t)  telegram $1 ;;
+    esac
+}
+
+if [ $# -lt 2 ]; then
+    usage
+fi
+
+SINK=$1
+shift 1
+
+for f in $@; do
+    if [[ -f $f ]] ; then : ; else continue ; fi
+    echo "File: $f"
+
+    share $f
+done
+

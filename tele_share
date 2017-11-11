@@ -1,0 +1,15 @@
+#!/bin/sh
+
+TO="${TO:-Freizeitunternehmungen_:-)}"
+
+usage() {
+    echo "Usage: $(basename $0) <file>" > /dev/stderr
+    exit 1
+}
+
+if [ $# -ne 1 ] || [ ! -f $1 ]; then
+    usage
+else
+    echo "sending $1"
+    telegram-cli -v 2 -W -e "send_photo $TO $1"
+fi

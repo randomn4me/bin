@@ -15,11 +15,14 @@ open() {
             mpv "$1"
             ;;
         *)
-            echo "Falling back to xdg-open" > /dev/stderr
+            echo "Fallback to xdg-open" > /dev/stderr
             xdg-open "$1" > /dev/null
     esac
 }
 
-test -f "$1" || echo "Usage: $(basename $0) <1>"
+if [ ! -f "$1" ]; then
+    echo "Usage: $(basename $0) <1>" > /dev/stderr
+    exit 1
+fi
 
 open "$1" > /dev/null 2>&1 &
