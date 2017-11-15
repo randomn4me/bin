@@ -5,7 +5,7 @@ open() {
         *.md|*.c|*.py)
             urxvt -e /bin/sh -c "vim "$1""
             ;;
-        *.png|*.jpg|*.jpeg)
+        *.png|*.jpg|*.jpeg|*.JPG)
             meh "$1"
             ;;
         *.pdf)

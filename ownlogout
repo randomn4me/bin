@@ -10,7 +10,5 @@ pkill unclutter &
 
 pkill xss-lock &
 
-pkill sxhkd &
 pkill bar &
-pkill cwm &
-pkill bspwm &
+pkill sxhkd

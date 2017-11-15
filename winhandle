@@ -17,31 +17,13 @@ test $# -eq 1 || usage
 wattr $1 && wid=$1
 
 case "$(winname)" in
-    urxvt*)
-        snap c $wid
-        groaw -a 1
-        ;;
-    mupdf)
-        groaw -a 2
-        snap tr $wid
-        ;;
+    urxvt*)     snap c $wid ;;
+    mupdf)      snap c $wid ;;
+    lemonbar)   ;;
     *)
         case "$(winclass)" in
-            Firefox)
-                groaw -a 5
-                ;;
-            qutebrowser)
-                groaw -a 5
-                ;;
-            mpv)
-                groaw -a 3
-                snap c $wid
-                ;;
-            "Signal Private Messenger")
-                groaw -a 4
-                ;;
-            *)
-                groaw -a 1
+            mpv)        snap c $wid ;;
+            Firefox)    snap tl $wid ;;
         esac
         ;;
 esac

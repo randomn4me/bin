@@ -7,7 +7,7 @@ export BORG_REPO=/mnt/hdd/backup
 export BORG_PASSCOMMAND='pass show borg_backup'
 
 usage() {
-    echo "Usage: $(basename $0) [bsh]" > /dev/stderr
+    echo "Usage: $(basename $0) [hbsi]" > /dev/stderr
     exit 1
 }
 
@@ -77,8 +77,13 @@ backup() {
     exit ${global_exit}
 }
 
-case $1 in
-    b) backup ;;
-    s) borg list $BORG_REPO ;;
-    *) usage ;;
-esac
+main() {
+    case $1 in
+        b) backup > ~/var/log/backup 2>&1 & ;;
+        s) borg list $BORG_REPO ;;
+        i) borg info $BORG_REPO ;;
+        *) usage ;;
+    esac
+}
+
+main $@

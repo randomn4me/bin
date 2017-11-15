@@ -34,7 +34,7 @@ shift 1
 for f in $@; do
     if [[ -f $f ]] ; then : ; else continue ; fi
     echo "File: $f"
-
-    share $f
+    
+    share $TMP_FILE
 done
 

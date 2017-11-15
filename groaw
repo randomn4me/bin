@@ -43,13 +43,15 @@ togg_group() {
     wid=$(ls -1 $GROOT/$1 | sed 1q)
 
     test -z "$wid" && return
-    wattr m $wid \
-        && hide_group $1 \
-        || show_group $1
+    if wattr m $wid ; then
+        hide_group $1
+    else
+        show_group $1
+    fi
 }
 
 check_groups_sanity() {
-    for gid in $(seq 1 $GNUMBER ); do
+    for gid in $(seq 1 $GNUMBER); do
         test -d $GROOT/$gid || mkdir -p $GROOT/$gid
     done
 

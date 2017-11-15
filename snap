@@ -51,5 +51,5 @@ case $1 in
         usage ;;
 esac
 
-wmp -a $(( WX + WW / 2 )) $(( WY + WH / 2 ))
+wmp -a $(( WX + WW / 3 * 2 )) $(( WY + WH / 3 * 2 ))
 wtp $WX $WY $WW $WH $WID
