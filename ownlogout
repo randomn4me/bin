@@ -12,3 +12,4 @@ pkill xss-lock &
 
 pkill bar &
 pkill sxhkd
+pkill i3 &

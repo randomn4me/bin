@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Setting this, so the repo does not need to be given on the commandline:
-export BORG_REPO=/mnt/hdd/backup
+export BORG_REPO=/mnt/hdd/borg-backup
 
 # or this to ask an external program to supply the passphrase:
 export BORG_PASSCOMMAND='pass show borg_backup'
 
 usage() {
-    echo "Usage: $(basename $0) [hbsi]" > /dev/stderr
+    echo "Usage: $(basename $0) [hbli]" > /dev/stderr
     exit 1
 }
 
@@ -80,7 +80,7 @@ backup() {
 main() {
     case $1 in
         b) backup > ~/var/log/backup 2>&1 & ;;
-        s) borg list $BORG_REPO ;;
+        l) borg list $BORG_REPO ;;
         i) borg info $BORG_REPO ;;
         *) usage ;;
     esac
