@@ -10,4 +10,4 @@ fi
 
 [ ! -d $TRASH ] && mkdir $TRASH
 
-meh ${DIR}/*.JPG | xargs -I f mv f $TRASH
+find ${DIR} -type f -name *.JPG | meh -list | xargs -I f mv f $TRASH
