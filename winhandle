@@ -19,7 +19,6 @@ wattr $1 && wid=$1
 case "$(winname)" in
     urxvt*)     snap c $wid ;;
     mupdf)      snap c $wid ;;
-    lemonbar)   ;;
     *)
         case "$(winclass)" in
             mpv)        snap c $wid ;;

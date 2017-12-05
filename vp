@@ -1,13 +1,18 @@
 #!/bin/sh
 # view new photos
 
-DIR=~/usr/pics/new
+DIR=$HOME/usr/pics/new
 TRASH=$DIR/trash
 
-if [ ! -z "$1" ] && [ -d "$1" ]; then
+trash() {
+	FILE=$1
+	mv ${FILE%%.*}.* $TRASH
+}
+
+if [ -n "$1" ] && [ -d "$1" ]; then
     DIR="$1"
 fi
 
 [ ! -d $TRASH ] && mkdir $TRASH
 
-find ${DIR} -type f -name *.JPG | meh -list | xargs -I f mv f $TRASH
+ls ${DIR}/*.JPG ${DIR}/*.jpg | sort | meh -list | xargs -I f mv f $TRASH
