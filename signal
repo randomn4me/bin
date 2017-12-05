@@ -9,7 +9,7 @@ err() {
 }
 
 usage() {
-    err "Usage: $(basename $0) [-h] [-a file] <receiver> <msg>"
+    err "Usage: $(basename $0) [-hc] [-a file] <receiver> <msg>"
 }
 
 read-contacts() {
@@ -74,4 +74,4 @@ fi
 
 shift 1
 
-signal-cli -u ${USER} send -m "$@" "${receiver[@]}" ${attachment}
+signal-cli -u ${USER} send -m "$@" "${receiver[@]}" ${attachment} &
