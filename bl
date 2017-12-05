@@ -10,8 +10,8 @@ which xbacklight > /dev/null 2>&1 \
     || ( echo "xbacklight not installed" && exit 1 )
 
 case $1 in
-    +) xbacklight -inc 5 ;;
-    -) xbacklight -dec 5 ;;
+    +) xbacklight -inc 10 ;;
+    -) xbacklight -dec 10 ;;
     h) usage ;;
     +([[:digit:]]) ) xbacklight -set $1 ;;
     *) printf "%2.0f\n" `xbacklight -get` ;;
