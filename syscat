@@ -30,7 +30,7 @@ shell=`echo ${SHELL##*/}`
 packages=`pacman -Qq | wc -l`
 birth=`head -n1 /var/log/pacman.log | sed "s/^\[\(.*\)\].*\].*/\1/p;d"`
 uptime="`myuptime`"
-wm="cwm"
+wm="none"
 
 printf "\n"
 printf "\t$(color 3)%s$reset %s\n\n" "$USER" "is online"
