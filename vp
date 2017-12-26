@@ -2,7 +2,6 @@
 # view new photos
 
 DIR=$HOME/usr/pics/new
-TRASH=$DIR/trash
 
 trash() {
 	FILE=$1
@@ -13,6 +12,7 @@ if [ -n "$1" ] && [ -d "$1" ]; then
     DIR="$1"
 fi
 
+TRASH=$DIR/trash
 [ ! -d $TRASH ] && mkdir $TRASH
 
 ls ${DIR}/*.JPG ${DIR}/*.jpg | sort | meh -list | xargs -I f mv f $TRASH

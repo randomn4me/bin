@@ -6,4 +6,4 @@ usage() {
 
 test ! -f "$1" && usage && exit 1
 
-markdown "$1" | w3m -T text/html
+markdown_py "$1" | w3m -T text/html

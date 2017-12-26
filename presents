@@ -1,0 +1,41 @@
+#!/bin/sh
+
+FILE=$HOME/usr/docs/misc/presents
+
+usage() {
+	echo "Usage: $(basename $0) [s <name>] [aeh]"
+	exit 1
+}
+
+add() {
+	local NAME PRESENT CHOICE
+	while [ -z "$NAME" ]; do
+		read -p "Name: " NAME
+	done
+
+	while [ -z "$PRESENT" ]; do
+		read -p "Present: " PRESENT
+	done
+
+	read -p "Correct? $NAME;$PRESENT [y/n] " CHOICE
+	if [ "$CHOICE" = "y" ]; then
+		echo "$NAME;$PRESENT" >> $FILE
+	else
+		exit 1
+	fi
+}
+
+show() {
+	[ -z $1 ] && usage
+
+	grep "$2" $FILE | column -t -s\; | nl
+}
+
+[ ! -f $FILE ] && touch $FILE
+
+case $1 in
+	s) show $2 ;;
+	a) add ;;
+	e) vim $FILE ;;
+	*) usage ;;
+esac

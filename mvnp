@@ -12,4 +12,5 @@ find "$MOUNT_POINT" \
     \( -name '*.JPG' -o -name '*.CR2' \) \
     -exec mv {} $NEW \;
 
-fdupes -rqNA $PICS
+# include fdupes
+# fdupes -rqNA $PICS

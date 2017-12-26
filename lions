@@ -1,0 +1,13 @@
+#!/bin/sh
+
+CAL_ID=2683
+URL='http://www.darmstaedter-lions-adventskalender.de/Gewinner.Lions'
+UA='Mozilla 5.0'
+
+RESULT=`curl --user-agent "$UA" -s ${URL} | grep "<a .*>${CAL_ID}</a>"`
+
+if [[ -n ${OUTPUT} ]]; then
+	echo "Won"
+else
+	echo "Not won"
+fi

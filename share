@@ -12,8 +12,8 @@ telegram() {
 signal() {
     groups=(familie terribly-funny informatiker)
     for group in ${groups[@]}; do
-        echo "\tSharing with $group"
-        ~/bin/signal -a "$1" $group "shared photo"
+        echo "Sharing with $group"
+        $HOME/bin/signal -a "$1" $group "shared photo"
     done
 }
 
