@@ -3,7 +3,7 @@
 FILE=$HOME/usr/docs/misc/presents
 
 usage() {
-	echo "Usage: $(basename $0) [s <name>] [aeh]"
+	echo "Usage: $(basename $0) [s [name]] [aeh]"
 	exit 1
 }
 
@@ -26,9 +26,11 @@ add() {
 }
 
 show() {
-	[ -z $1 ] && usage
-
-	grep "$2" $FILE | column -t -s\; | nl
+	if [ -z $1 ]; then
+		column -t -s\; $FILE | nl
+	else
+		grep -i "$1" $FILE | column -t -s\; | nl
+	fi
 }
 
 [ ! -f $FILE ] && touch $FILE
