@@ -11,7 +11,7 @@ open() {
         *.pdf)
             mupdf "$1"
             ;;
-        *.mp4)
+        *.mp4|*.mkv|*.mpv)
             mpv "$1"
             ;;
         *)
@@ -20,7 +20,7 @@ open() {
     esac
 }
 
-if [ ! -f "$1" ]; then
+if [ -z "$1" ]; then
     echo "Usage: $(basename $0) <1>" > /dev/stderr
     exit 1
 fi

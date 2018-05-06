@@ -1,5 +1,6 @@
 #!/bin/sh
 
+WALL_DIR="$HOME/usr/pics/wallpapers"
 WALL_FILE="$HOME/.cache/wallpaper"
 
 usage() {
@@ -14,15 +15,9 @@ which hsetroot > /dev/null 2>&1 || \
 test -z $1 && hsetroot -fill `cat $WALL_FILE` && exit 0
 
 set_wp() {
-	hsetroot -fill "$1"
-	echo `readlink -f -z "$1"` > $WALL_FILE
+	FULL_LINK=`readlink -f "$1"`
+	hsetroot -fill "$FULL_LINK"
+	echo $FULL_LINK > $WALL_FILE
 }
 
-if [ -f $1 ]
-then
-	echo "$1"
-	set_wp "$1"
-elif [ -d "$1" ]
-then
-	echo "choose rand wal and set-wp"
-fi
+test -f $1 && set_wp "$1"

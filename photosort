@@ -46,11 +46,11 @@ sorting() {
 		YEAR=$(echo $DATE | cut -d: -f1)
 		MONTH=$(echo $DATE | cut -d: -f2)
 
-		NEWDIR="$PHOTODIR"/${YEAR}_${MONTH}
+		NEWDIR="$PHOTODIR"/${YEAR}/${MONTH}
 		test ! -z $DEST && NEWDIR=${NEWDIR}_$DEST
 
 		if [ $RUN ]; then
-			[ ! -d $NEWDIR ] && mkdir "$NEWDIR" > /dev/null 2>&1
+			[ ! -d $NEWDIR ] && mkdir -p "$NEWDIR" > /dev/null 2>&1
 			moving "$f"
 		else
 			[ ! -d $NEWDIR ] && echo "creating $NEWDIR"

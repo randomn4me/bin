@@ -9,7 +9,7 @@ err() {
 }
 
 usage() {
-    err "Usage: $(basename $0) [-hc] [-a file] <receiver> <msg>"
+    err "Usage: $(basename $0) [-hl] [-a file] <receiver> <msg>"
 }
 
 read-contacts() {
@@ -39,7 +39,7 @@ if [[ -z $USER ]]; then
     err "No user given"
 fi
 
-while getopts 'ha:c' opt; do
+while getopts 'ha:l' opt; do
     case $opt in
         a)
             if [[ -f $OPTARG ]]; then
@@ -48,7 +48,7 @@ while getopts 'ha:c' opt; do
                 usage
             fi
             ;;
-        c)  column -s \; -t $CONTACTS
+        l)  column -s \; -t $CONTACTS
             exit 0
             ;;
         *)  usage ;;

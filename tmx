@@ -1,52 +1,52 @@
 #!/bin/sh
 
 usage() {
-    cat << EOF
+	cat << EOF
 Usage: $(basename $0) <uni|music|coding|irssi>
 EOF
 }
 
 attach() {
-    tmux attach-session -t $SESSION_NAME 2> /dev/null
+	tmux attach-session -t $SESSION_NAME 2> /dev/null
 }
 
 create() {
-    case $SESSION_NAME in
-        uni)
-            DIR="`curterm`"
-            test -z $DIR && printf "Error loading dir\n" && exit 1
-            tmux new-session -d -n "misc" -s "$SESSION_NAME"
-            for d in `ls -d $DIR/*`; do
-                cd $d
-                tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
-            done
-            tmux kill-window -t $SESSION_NAME:misc
-            ;;
-        music)
-            tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
-            tmux split-window -v -p 33 -t $SESSION_NAME "cava"
-            tmux select-pane -U -t $SESSION_NAME
-            tmux set-option -t $SESSION_NAME status off
-            ;;
-        coding)
-            tmux new-session -d -n "c" -s $SESSION_NAME
-            tmux split-window -v -p 33 -t $SESSION_NAME
-            tmux select-pane -U -t $SESSION_NAME
-            ;;
-        irssi)
-            tmux new-session -d -n "irssi" -s $SESSION_NAME "irssi"
-            ;;
-        *)
-            echo "No such session defined" > /dev/stderr
-    esac
+	case $SESSION_NAME in
+		uni)
+			DIR="`curterm`"
+			test -z $DIR && printf "Error loading dir\n" && exit 1
+			tmux new-session -d -n "misc" -s "$SESSION_NAME"
+			for d in `ls -d $DIR/*`; do
+				cd $d
+				tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
+			done
+			tmux kill-window -t $SESSION_NAME:misc
+			;;
+		music)
+			tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
+			tmux split-window -v -p 33 -t $SESSION_NAME "cava"
+			tmux select-pane -U -t $SESSION_NAME
+			tmux set-option -t $SESSION_NAME status off
+			;;
+		coding)
+			tmux new-session -d -n "c" -s $SESSION_NAME
+			tmux split-window -v -p 33 -t $SESSION_NAME
+			tmux select-pane -U -t $SESSION_NAME
+			;;
+		irssi)
+			tmux new-session -d -n "irssi" -s $SESSION_NAME "irssi"
+			;;
+		*)
+			echo "No such session defined" > /dev/stderr
+	esac
 }
 
 case "$1" in
-    uni)    export SESSION_NAME="uni" ;;
-    m*)  export SESSION_NAME="music" ;;
-    c*)     export SESSION_NAME="coding" ;;
-    i*)     export SESSION_NAME="irssi" ;;
-     *) usage ;;
+	uni)	export SESSION_NAME="uni" ;;
+	m*)		export SESSION_NAME="music" ;;
+	c*)		export SESSION_NAME="coding" ;;
+	i*)		export SESSION_NAME="irssi" ;;
+	 *)		usage ;;
 esac
 
 attach || ( create && attach )
