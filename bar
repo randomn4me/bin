@@ -3,25 +3,25 @@
 MONWIDTH=$(wattr w `lsw -r`)
 
 newmails() {
-    ls "$MAIL/new" | wc -l
+	(ls "$MAIL/new"; ls ~/var/sit-mail/Inbox/new) | wc -l
 }
 
 volume() {
-    if [ $(vol s) = "on" ]; then vol; else echo "!$(vol)"; fi
+	if [ $(vol s) = "on" ]; then vol; else echo "!$(vol)"; fi
 }
 
 # left bar
 while :; do
-    printf "%s%4s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
-    sleep 1s
+	printf "%s%4s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
+	sleep 1s
 done |\
 
 mybar $GAPS "bar" &
 
 # right bar
 while :; do
-    printf "%s%(%d.%m  %I:%M)T\n" "%{c}"
-    sleep 60s 
+	printf "%s%(%d.%m  %I:%M)T\n" "%{c}"
+	sleep 60s 
 done |\
 
 mybar $(( MONWIDTH - MONWIDTH / 15 - GAPS )) "bar" &
