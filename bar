@@ -6,10 +6,6 @@ newmails() {
 	(ls "$MAIL/new"; ls ~/var/sit-mail/Inbox/new) | wc -l
 }
 
-volume() {
-	if [ $(vol s) = "on" ]; then vol; else echo "!$(vol)"; fi
-}
-
 # left bar
 while :; do
 	printf "%s%4s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"

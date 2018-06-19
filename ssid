@@ -1,5 +1,5 @@
 #!/bin/bash
 
-STATUS=$(iw dev wlan0 link)
+which iw > /dev/null 2>&1 || echo "no iw"
 
-grep SSID <<< "$STATUS" | cut -d: -f2 | xargs
+iw dev wlan0 link | grep SSID | cut -d: -f2 | xargs

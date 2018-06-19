@@ -1,3 +1,0 @@
-#!/bin/sh
-
-dmenu_open "$HOME/usr/vids/lcthw" "*.mp4" "$(basename $0)"

@@ -1,6 +1,0 @@
-#!/bin/sh
-MENUS="lcthwv\npaperopen\nbook_open"
-
-SINGLE_MENU=`printf $MENUS | sort | menu`
-
-exec "$SINGLE_MENU" &

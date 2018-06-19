@@ -4,12 +4,11 @@ mpc stop &
 
 pkill cava &
 
-pkill redshift &
 pkill wendy &
 pkill unclutter &
 
 pkill xss-lock &
+pkill xautolock &
 
 pkill bar &
-pkill sxhkd
-pkill i3 &
+pkill cwm

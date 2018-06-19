@@ -7,7 +7,7 @@ usage() {
 if [ $# -eq 1 ]; then :; else usage; exit 1; fi
 
 cat << EOF > LICENSE
-Copyright (c) `date +%Y` "$1" <r4ndom at posteo dot org>
+Copyright (c) `date +%Y` "$1" <r4ndommail at posteo dot org>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

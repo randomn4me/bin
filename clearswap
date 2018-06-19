@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ $UID -ne 0 ] && echo "Not run as root" > /dev/stderr && exit 1
+
+swapoff -a && swapon -a &

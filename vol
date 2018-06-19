@@ -24,9 +24,9 @@ test "$#" -eq 0 && echo "$(level)" && exit 0
 case "$1" in
     s)  state ;;
     h)  usage ;;
-    l)  level ;;
     t)  pamixer -t > /dev/null ;;
     +)  pamixer --increase 5 > /dev/null ;;
     -)  pamixer --decrease 5 > /dev/null ;;
+    +([[:digit:]]) ) pamixer --set-volume $1 ;;
     *)  usage ;;
 esac
