@@ -3,11 +3,9 @@
 # z3bra - 2014 (c) wtfpl
 # window focus wrapper that sets borders and can focus next/previous window
 
-test -f $COLOR_FILE && source $COLOR_FILE
-
-BW=${BORDER_WIDTH:-2} # border width
-ACTIVE=$fg            # active border color
-INACTIVE=$bg          # inactive border color
+BW=2               # border width
+ACTIVE='#c2c2b0'   # active border color
+INACTIVE='#000000' # inactive border color
 
 # get current window id
 CUR=$(pfw || echo NONE)

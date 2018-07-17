@@ -12,7 +12,7 @@ while :; do
 	sleep 1s
 done |\
 
-mybar $GAPS "bar" &
+mybar 10 "bar" &
 
 # right bar
 while :; do
@@ -20,4 +20,4 @@ while :; do
 	sleep 60s 
 done |\
 
-mybar $(( MONWIDTH - MONWIDTH / 15 - GAPS )) "bar" &
+mybar $(( MONWIDTH - MONWIDTH / 15 - 10)) "bar" &

@@ -1,6 +1,9 @@
 #!/bin/sh
 # inspiration by z3bras maximize
 
+GAPS=10
+TOP_PADDING=20
+
 usage() {
     printf "Usage: $(basename $0) <x|y|f> <wid>\n"
     exit 1

@@ -2,14 +2,17 @@
 
 usage() {
 	echo "Usage: $(basename $0) <station>"
+	exit 1
 }
 
 
 
 case `echo $1 | tr '[:upper:]' '[:lower:]'` in
-	dlf)	URL='http://st01.dlf.de/dlf/01/128/mp3/stream.mp3' ;;
-	nova)	URL='http://st03.dlf.de/dlf/03/104/ogg/stream.ogg';;
-	*)		usage
+	dlf)   URL='http://st01.dlf.de/dlf/01/128/mp3/stream.mp3' ;;
+	nova)  URL='http://st03.dlf.de/dlf/03/104/ogg/stream.ogg';;
+	off|0) ;;
+	*)     usage ;;
 esac
 
-ffplay -loglevel -8 ${URL} &
+pkill mpv
+mpv --quiet ${URL} > /dev/null 2>&1 &

@@ -10,7 +10,7 @@ mkdir -p $NEW
 find "$MOUNT_POINT" \
     -type f \
     \( -name '*.JPG' -o -name '*.CR2' \) \
-    -exec mv {} $NEW \;
+    -exec cp -a {} $NEW \;
 
 # include fdupes
 # fdupes -rqNA $PICS

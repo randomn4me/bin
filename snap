@@ -1,5 +1,9 @@
 #!/bin/sh
 
+GAPS=10
+TOP_PADDING=20
+BORDER_WIDTH=2
+
 usage() {
     printf "Usage: $(basename $0) <tl|tr|c|bl|br> <wid>\n"
     exit 1

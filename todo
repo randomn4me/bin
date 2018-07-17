@@ -2,42 +2,25 @@
 FILE="$HOME/.todo"
 
 usage() {
-    echo "Usage: $(basename $0) [-hsn] [-a todo] [-d <line-nr>]"
-    exit 1
+	echo "Usage: $(basename $0) [hne] [a todo]"
+	exit 1
 }
 
 add() {
-    test $# -eq 0 && usage
-    echo "$@" | tee -a $FILE 1> /dev/null
-}
-
-delete() {
-    test $# -eq 0 && usage
-    for l in "$@"; do
-        echo "todo '$(sed ${l}q $FILE)' deleted."
-        sed -i "${l}d" $FILE
-    done
-}
-
-number() {
-    <$FILE wc -l
-}
-
-show() {
-    <$FILE nl
+	test $# -eq 0 && usage
+	echo "$@" | tee -a $FILE 1> /dev/null
 }
 
 main() {
-    opt=$1
-    shift 1
-    case "$opt" in
-        -n) number ;;
-        -s) show ;;
-      -h|?) usage ;;
-        -a) add "$@" ;;
-        -d) delete "$@" ;;
-         *) show
-    esac
+	opt=$1
+	shift 1
+	case "$opt" in
+	    e) vim $FILE ;;
+	    n) <$FILE wc -l ;;
+	    a) add "$@" ;;
+	  h|?) usage ;;
+	    *) <$FILE nl
+	esac
 }
 
 main "$@"
