@@ -1,10 +1,11 @@
 #!/bin/bash
 
-res=$(printf "logout\nreboot\nshutdown" | menu "-p $(basename $0)")
+res=$(printf "logout\nreboot\nsuspend\nshutdown" | menu "-p $(basename $0)")
 
 case "$res" in
     "logout")   ownlogout ;;
     "reboot")   systemctl reboot ;;
+    "suspend")  systemctl suspend ;;
     "shutdown") systemctl poweroff ;;
 esac
 

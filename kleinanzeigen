@@ -1,0 +1,26 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename $0) <ext> <title>"
+	exit 1
+}
+
+test $# -ne 2 && usage
+
+EXT=$1
+TITLE=$2
+
+TMP=`mktemp`
+
+( find $PWD -iname "*.$EXT" | sort | meh -list ) > $TMP
+
+cat $TMP
+
+i=0
+for f in `cat $TMP`; do
+	mv -i $f "$(dirname $f)/${TITLE}_${i}.${EXT}"
+	# mv $f "$2.${filename#*.}"
+	i=$((i + 1))
+done
+
+rm -f $TMP

@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Setting this, so the repo does not need to be given on the commandline:
-export BORG_REPO=/mnt/hdd/borg-backup
+export BORG_REPO=/mnt/backup/borg-backup
 
 # or this to ask an external program to supply the passphrase:
-export BORG_PASSCOMMAND='pass show borg_backup'
+export BORG_PASSCOMMAND='pass show borg/passphrase'
 
 usage() {
     cat <<EOF > /dev/stderr
@@ -37,15 +37,14 @@ backup() {
         --show-rc                       \
         --compression lz4               \
         --exclude-caches                \
-        --exclude $HOME/.vim/backup     \
-        --exclude $HOME/.vim/swap       \
-        --exclude $HOME/.vim/undo       \
-        --exclude $HOME/.cache          \
         --exclude *~                    \
         --exclude *.pyc                 \
+        --exclude /home/phil/var/log    \
         \
         ::'{now:%Y-%m-%d}'              \
-        /home                           \
+        /home/phil/src                  \
+        /home/phil/usr                  \
+        /home/phil/var                  \
 
         backup_exit=$?
 

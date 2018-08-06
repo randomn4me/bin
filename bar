@@ -16,8 +16,8 @@ mybar 10 "bar" &
 
 # right bar
 while :; do
-	printf "%s%(%d.%m  %I:%M)T\n" "%{c}"
-	sleep 60s 
+	printf "%s`python -c "import datetime; date = datetime.datetime.now() + datetime.timedelta(minutes=2); print(date.strftime('%d.%m  %H:%M'))"`\n" "%{c}"
+	sleep 10s
 done |\
 
 mybar $(( MONWIDTH - MONWIDTH / 15 - 10)) "bar" &
