@@ -1,0 +1,15 @@
+#!/bin/bash
+
+nmcli connection down eduroam
+sleep 1
+nmcli networking off
+
+sleep 5
+
+nmcli networking on
+sleep 1
+nmcli connection up eduroam
+
+sleep 1
+
+notify network restarted

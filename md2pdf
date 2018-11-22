@@ -1,0 +1,10 @@
+#!/bin/sh
+
+usage() {
+    printf "Usage: $(basename $0) <file>\n"
+}
+
+test ! -f "$1" && usage && exit 1
+
+filename=$(basename -- $1)
+pandoc -o "${filename%.*}.pdf" ${1}
