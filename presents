@@ -17,7 +17,7 @@ add() {
 		read -p "Present: " PRESENT
 	done
 
-	read -p "Correct? $NAME;$PRESENT [y/n] " CHOICE
+	read -p "Correct? $NAME;$PRESENT [y/N] " CHOICE
 	if [ "$CHOICE" = "y" ]; then
 		echo "$NAME;$PRESENT" >> $FILE
 	else

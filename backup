@@ -7,87 +7,87 @@ export BORG_REPO=/mnt/backup/borg-backup
 export BORG_PASSCOMMAND='pass show borg/passphrase'
 
 usage() {
-    cat <<EOF > /dev/stderr
+	cat <<EOF > /dev/stderr
 Usage: $(basename $0) [hbli]
 	h: help
 	b: backup
 	l: list
 	i: info
 EOF
-    exit 1
+	exit 1
 }
 
 # some helpers and error handling:
 info() { 
-    printf "\n%s %s\n\n" "$( date )" "$*" >&2
+	printf "\n%s %s\n\n" "$( date )" "$*" >&2
 }
 
 trap 'echo $( date ) Backup interrupted >&2; exit 2' INT TERM
 
 backup() {
-    info "Starting backup"
+	info "Starting backup"
 
-    # Backup the most important directories into an archive named after
-    # the machine this script is currently running on:
+	# Backup the most important directories into an archive named after
+	# the machine this script is currently running on:
 
-    borg create                         \
-        --filter AME                    \
-        --list                          \
-        --stats                         \
-        --show-rc                       \
-        --compression lz4               \
-        --exclude-caches                \
-        --exclude *~                    \
-        --exclude *.pyc                 \
-        --exclude /home/phil/var/log    \
-        \
-        ::'{now:%Y-%m-%d}'              \
-        /home/phil/src                  \
-        /home/phil/usr                  \
-        /home/phil/var                  \
+	borg create						 \
+		--filter AME					\
+		--list						  \
+		--stats						 \
+		--show-rc					   \
+		--compression lz4			   \
+		--exclude-caches				\
+		--exclude *~					\
+		--exclude *.pyc				 \
+		--exclude /home/phil/var/log	\
+		\
+		::'{now:%Y-%m-%d}'			  \
+		/home/phil/src				  \
+		/home/phil/usr				  \
+		/home/phil/var				  \
 
-        backup_exit=$?
+		backup_exit=$?
 
-    info "Pruning repository"
+	info "Pruning repository"
 
-    # Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
-    # archives of THIS machine. The '{hostname}-' prefix is very important to
-    # limit prune's operation to this machine's archives and not apply to
-    # other machines' archives also:
+	# Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
+	# archives of THIS machine. The '{hostname}-' prefix is very important to
+	# limit prune's operation to this machine's archives and not apply to
+	# other machines' archives also:
 
-    borg prune                          \
-        --list                          \
-        --prefix '{hostname}-'          \
-        --show-rc                       \
-        --keep-daily    7               \
-        --keep-weekly   4               \
-        --keep-monthly  6               \
+	borg prune						  \
+		--list						  \
+		--prefix '{hostname}-'		  \
+		--show-rc					   \
+		--keep-daily	7			   \
+		--keep-weekly   4			   \
+		--keep-monthly  6			   \
 
-        prune_exit=$?
+		prune_exit=$?
 
-    # use highest exit code as global exit code
-    global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
+	# use highest exit code as global exit code
+	global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
 
-    if [ ${global_exit} -eq 1 ];
-    then
-        info "Backup and/or Prune finished with a warning"
-    fi
+	if [ ${global_exit} -eq 1 ];
+	then
+		info "Backup and/or Prune finished with a warning"
+	fi
 
-    if [ ${global_exit} -gt 1 ];
-    then
-        info "Backup and/or Prune finished with an error"
-    fi
+	if [ ${global_exit} -gt 1 ];
+	then
+		info "Backup and/or Prune finished with an error"
+	fi
 
-    exit ${global_exit}
+	exit ${global_exit}
 }
 
 main() {
-    case $1 in
-        b) backup > ~/var/log/backup 2>&1 & ;;
-        l) borg list $BORG_REPO ;;
-        i) borg info $BORG_REPO ;;
-        *) usage ;;
-    esac
+	case $1 in
+		b) backup > ~/var/log/backup 2>&1 & ;;
+		l) borg list $BORG_REPO ;;
+		i) borg info $BORG_REPO ;;
+		*) usage ;;
+	esac
 }
 
 main $@

@@ -1,13 +1,7 @@
 #!/bin/sh
 
-usage() {
-	echo "Usage: $(basename $0) <name>"
-}
-
-if [ $# -eq 1 ]; then :; else usage; exit 1; fi
-
 cat << EOF > LICENSE
-Copyright (c) `date +%Y` "$1" <p dot jonczyk at posteo dot de>
+Copyright (c) `date +%Y` Philipp Kühn <p dot kuehn at posteo dot de>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

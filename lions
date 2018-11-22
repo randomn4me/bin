@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: ${CAL_ID:="2683"}
+: ${CAL_ID:="2360"}
 URL='http://www.darmstaedter-lions-adventskalender.de/Gewinner.Lions'
 UA='Mozilla 5.0'
 

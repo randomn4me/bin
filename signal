@@ -1,77 +1,104 @@
-#!/bin/bash
+#!/usr/bin/python3
 
-USER=$(pass show phonenumber)
-CONTACTS=${XDG_CONFIG_HOME:-~/.config}/signal/contacts
+import json
+import argparse
+import sys
+import os
+import datetime
 
-err() {
-    echo $@ > /dev/stderr
-    exit 1
-}
+from pydbus import SystemBus
 
-usage() {
-    err "Usage: $(basename $0) [-hl] [-a file] <receiver> <msg>"
-}
+VAR_DIR = os.path.join(os.getenv('HOME'), 'var', 'signal')
+CONFIG_DIR = os.getenv('XDG_CONFIG_HOME') if os.getenv('XDG_CONFIG_HOME') else os.path.join(os.getenv('HOME'), '.config')
+DATA = dict()
 
-read-contacts() {
-    while read -r f; do
-        if [[ -z $f ]]; then continue; fi
+def read_data():
+    signal_config_path = os.path.join(CONFIG_DIR, 'signal', 'data')
+    file_paths = [os.path.join(signal_config_path, f) for f in os.listdir(signal_config_path)]
 
-        TYPE=$(echo "$f" | cut -d\; -f1)
-        NAME=$(echo "$f" | cut -d\; -f2)
-        NUMBER=$(echo "$f" | cut -d\; -f3)
+    files = [f for f in file_paths if os.path.isfile(f)]
 
-        case "$TYPE" in
-            contact)    contacts[${NAME}]="${NUMBER}" ;;
-            group)      groups[${NAME}]="${NUMBER}" ;;
-        esac
-    done < $CONTACTS
-}
+    with open(files[0], 'r') as f:
+        data = json.loads(f.read())
+        global DATA
+        for entry in data['contactStore']['contacts']:
+            DATA[entry['name']] = entry['number']
+        for entry in data['groupStore']['groups']:
+            DATA[f'group-{entry["name"]}'] = entry['groupId']
 
-if which signal-cli > /dev/null 2>&1 ; then : ; else
-    err "signal-cli not in PATH"
-fi
+def write_to_file(file_name, msg):
+    file_path = os.path.join(VAR_DIR, file_name)
+    with open(file_path, 'a+') as f:
+        f.write(msg + '\n')
 
-if [[ ! -f $CONTACTS ]]; then
-    err "No contacts file"
-fi
+def print_groups():
+    for k in DATA.keys():
+        if 'group-' in k:
+            print(f'-> {k[6:]}')
+    exit(0)
 
-if [[ -z $USER ]]; then
-    err "No user given"
-fi
+def print_contacts():
+    for k in DATA.keys():
+        if 'group-' not in k and k:
+            print(f'-> {k}')
+    exit(0)
 
-while getopts 'ha:l' opt; do
-    case $opt in
-        a)
-            if [[ -f $OPTARG ]]; then
-                attachment="-a $OPTARG"
-            else
-                usage
-            fi
-            ;;
-        l)  column -s \; -t $CONTACTS
-            exit 0
-            ;;
-        *)  usage ;;
-    esac
-done
+def main():
+    ap = argparse.ArgumentParser(
+            description='Send messages using signal-cli on system-dbus',
+            formatter_class=argparse.RawTextHelpFormatter)
+    ap.add_argument('receiver', type=str, nargs='?', default=None)
+    ap.add_argument('msg', type=str, nargs='*')
+    ap.add_argument('-c', '--contacts',
+            action='store_true', default=False,
+            help='Print contacts')
+    ap.add_argument('-g', '--groups',
+            action='store_true', default=False,
+            help='Print groups')
 
-shift $((OPTIND - 1))
+    args = ap.parse_args()
+    read_data()
 
-if [[ $# < 2 ]]; then
-    usage
-fi
+    if args.contacts:
+        print_contacts()
+    elif args.groups:
+        print_groups()
 
-declare -A contacts groups
-read-contacts
+    if not args.receiver:
+        print('receiver required')
+        ap.print_help()
+        exit(0)
 
-if [[ ${contacts[$1]} ]]; then
-    receiver=(${contacts[$1]})
-elif [[ ${groups[$1]} ]]; then
-    receiver=('-g' "${groups[$1]}")
-else
-    err "Receiver unknown"
-fi
+    if not os.path.isdir(VAR_DIR):
+        os.makedirs(VAR_DIR)
 
-shift 1
+    if args.msg:
+        data = ' '.join(args.msg)
+    else:
+        data = sys.stdin.read()
 
-signal-cli -u ${USER} send -m "$@" "${receiver[@]}" ${attachment} &
+    pos_receivers = list()
+
+    for k in DATA.keys():
+        if args.receiver.lower() in k.lower():
+            pos_receivers.append(k)
+
+    if len(pos_receivers) != 1:
+        print(f'please be more specific: {pos_receivers}')
+        exit(0)
+    else:
+        receiver = pos_receivers[0]
+
+    bus = SystemBus()
+    signal_dbus = bus.get('org.asamk.Signal')
+
+    yesno = input(f'{receiver} ({DATA[receiver]}) : {data}\nCorrect? [Y/n] ')
+    if yesno == 'N' or yesno == 'n':
+        print('abort')
+        exit(0)
+
+    signal_dbus.sendMessage(data, [], [DATA[receiver]])
+    write_to_file(receiver, f'[{datetime.datetime.now().strftime("%F %R:%S")}] >>> {data}'.strip())
+
+if __name__ == '__main__':
+    main()
