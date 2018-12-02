@@ -24,7 +24,7 @@ myuptime() {
     printf "%dd %dh %dm" "$days" "$hours" "$mins"
 }
 
-distro=`lsb_release -i | cut -d: -f2 | xargs`
+distro='arch'
 kernel=`uname -r`
 shell=`echo ${SHELL##*/}`
 packages=`pacman -Qq | wc -l`
