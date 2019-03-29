@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+
+import argparse
+import re
+import requests
+from bs4 import BeautifulSoup
+
+def err(msg):
+    exit(f'[!] Error: {msg}')
+
+URL = 'https://www.youtube.com/results?search_query='
+BASE_URL = 'https://www.youtube.com'
+HEADER = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; rv:31.0) Gecko/20100101 Firefox/31.0'}
+
+argparser = argparse.ArgumentParser()
+argparser.add_argument('-n', '--num', type=int, default=3)
+argparser.add_argument('-u', '--url', action='store_true')
+argparser.add_argument('query', nargs='+')
+args = argparser.parse_args()
+
+try:
+    content = requests.get(f'{URL}{" ".join(args.query)}', headers=HEADER).content
+except:
+    err('Loading URL')
+
+soup = BeautifulSoup(content, 'html.parser')
+a_tags = soup.find_all('a', href=re.compile('^/watch'))
+
+result_dict = dict((tag['href'], tag.text.strip()) for tag in a_tags if tag.text and
+        tag['href'])
+
+if args.url:
+    results = [f'{BASE_URL}{url}' for url in result_dict.keys()]
+    print('\n'.join(results[:args.num]))
+else:
+    results = [f'{title.lower()}: {BASE_URL}{url}' for (url, title) in result_dict.items()]
+    print('\n'.join(results[:args.num]))

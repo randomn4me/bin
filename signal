@@ -34,13 +34,13 @@ def write_to_file(file_name, msg):
 def print_groups():
     for k in DATA.keys():
         if 'group-' in k:
-            print(f'-> {k[6:]}')
+            print(k[6:])
     exit(0)
 
 def print_contacts():
     for k in DATA.keys():
         if 'group-' not in k and k:
-            print(f'-> {k}')
+            print(k)
     exit(0)
 
 def main():
@@ -52,6 +52,8 @@ def main():
     ap.add_argument('-c', '--contacts',
             action='store_true', default=False,
             help='Print contacts')
+    ap.add_argument('-n', '--no-confirm',
+            action='store_true', default=False)
     ap.add_argument('-g', '--groups',
             action='store_true', default=False,
             help='Print groups')
@@ -73,9 +75,11 @@ def main():
         os.makedirs(VAR_DIR)
 
     if args.msg:
-        data = ' '.join(args.msg)
+        msg = ' '.join(args.msg)
     else:
-        data = sys.stdin.read()
+        msg = sys.stdin.read()
+
+    msg = msg.rstrip().lower()
 
     pos_receivers = list()
 
@@ -92,13 +96,18 @@ def main():
     bus = SystemBus()
     signal_dbus = bus.get('org.asamk.Signal')
 
-    yesno = input(f'{receiver} ({DATA[receiver]}) : {data}\nCorrect? [Y/n] ')
+    phone = DATA[receiver]
+    yesno = True if args.no_confirm else input(f'{receiver} ({phone}) : {msg}\nCorrect? [Y/n] ')
     if yesno == 'N' or yesno == 'n':
         print('abort')
         exit(0)
 
-    signal_dbus.sendMessage(data, [], [DATA[receiver]])
-    write_to_file(receiver, f'[{datetime.datetime.now().strftime("%F %R:%S")}] >>> {data}'.strip())
+    try:
+        signal_dbus.sendMessage(msg, [], [phone])
+        time = datetime.datetime.now().strftime("%F %R:%S")
+        write_to_file(receiver, f'[{time}] >>> {msg}'.strip())
+    except Exception as e:
+        print('error sending msg', e)
 
 if __name__ == '__main__':
     main()

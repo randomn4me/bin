@@ -2,7 +2,7 @@
 
 GAPS=10
 TOP_PADDING=20
-BORDER_WIDTH=2
+BORDER_WIDTH=1
 
 usage() {
     printf "Usage: $(basename $0) <tl|tr|c|bl|br> <wid>\n"

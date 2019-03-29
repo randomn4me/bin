@@ -17,7 +17,7 @@ grepdate() {
 startvid() {
     RESPONSE="Y"
 
-    read -n 1 -p "Date $(grepdate) correct? " RESPONSE
+    read -n 1 -p "Date $(grepdate) correct? [Y/n] " RESPONSE
 
     case "$RESPONSE" in
         [nN])   echo ;;

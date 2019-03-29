@@ -4,10 +4,20 @@
 URL='http://www.darmstaedter-lions-adventskalender.de/Gewinner.Lions'
 UA='Mozilla 5.0'
 
+test $1 == "-m" && MAIL=true
+
 RESULT=`curl --user-agent "$UA" -s ${URL} | grep "<a .*>${CAL_ID}</a>"`
 
-if [[ -n ${OUTPUT} ]]; then
-	echo "Won"
+out() {
+	if [[ $MAIL ]]; then
+		echo $@ | mutt -s '[Lions] Adventskalender' -c 'p.kuehn@posteo.de' -c 'camilla.kuehn@posteo.de'
+	else
+		echo $@
+	fi
+}
+
+if [[ -n ${RESULT} ]]; then
+	out "Won"
 else
-	echo "Not won"
+	out "Not won"
 fi

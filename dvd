@@ -1,0 +1,7 @@
+#!/bin/sh
+
+test -z "`mount | grep /dev/sr0`" && echo "No dvd mounted" && exit 1
+which mpv > /dev/null 2>&1 || ( echo "mpv not in path" && exit 1 )
+
+echo "Play movie.."
+mpv "dvd://" > /dev/null 2>&1 &

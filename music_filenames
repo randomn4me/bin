@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+
+import os
+
+FILENAME='content'
+
+try:
+    with open(FILENAME, 'r') as f:
+        file_content = f.readlines()
+except:
+    print(f'[!] Error : No file named {FILENAME}')
+    exit()
+
+cd_content = dict()
+for line in file_content:
+    splitted = line.split()
+    num = splitted[0][:-1]
+    title = ' '.join(splitted[1:]).strip()
+    cd_content[num] = title
+
+for key in cd_content:
+    print(key, cd_content[key])
+
+yesno = input('Correct? [Y/n] ')
+if yesno == 'N' or yesno == 'n':
+    print('Abort ..')
+    exit()
+
+artist = input('Artist? ')
+yesno = input(f'\'{artist}\' correct? [Y/n] ')
+if yesno == 'N' or yesno == 'n':
+    print('Abort ..')
+    exit()
+
+dir_content = os.listdir()
+for key in cd_content:
+    f = next(item for item in dir_content if item.startswith('{:02}'.format(int(key))))
+    if f:
+        os.rename(f, f'{"{:02}".format(int(key))} {artist} - {cd_content[key]}.mp3')
+
+print('done ..')
+

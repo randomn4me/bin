@@ -1,0 +1,29 @@
+#!/bin/sh
+
+CAL_DIR=$HOME/var/calendar
+QUIET_GREP=''
+QUIET_FIND='-print'
+DELETE=''
+
+usage() {
+	echo "Usage $(basename $0) [-qd] <tag>"
+	exit 1
+}
+
+myfind() {
+	find $CAL_DIR -type f -exec grep -i $QUIET_GREP "$1" {} \; $QUIET_FIND $DELETE
+}
+
+while getopts "qd" opt; do
+	case $opt in
+		q) QUIET_GREP='-q'; QUIET_FIND='' ;;
+		d) DELETE='-delete' ;;
+		*) usage ;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
+test $# -ne 1 && usage
+
+myfind $1

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR="$HOME/usr/vids/screencast"
+DIR="$HOME/usr/vids/screencasts"
 DATE=`date '+%F_%H-%M'`
 
 RM=$(lsw -r)

@@ -6,8 +6,14 @@ usage() {
 }
 
 
+stations() {
+	echo "stations: dfl nova"
+	exit 1
+}
+
 
 case `echo $1 | tr '[:upper:]' '[:lower:]'` in
+	-l)    stations ;;
 	dlf)   URL='http://st01.dlf.de/dlf/01/128/mp3/stream.mp3' ;;
 	nova)  URL='http://st03.dlf.de/dlf/03/104/ogg/stream.ogg';;
 	off|0) ;;

@@ -2,7 +2,4 @@
 
 export WIDTH="$(( $(wattr w `lsw -r`) / 3 ))"
 
-test -z "$(mount | grep '/mnt/usb')" && notify "uni not mounted" && \
-	exit 1
-
 dmenu_open $(curterm) "*.pdf" "uniopen"
