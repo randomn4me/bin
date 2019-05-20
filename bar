@@ -3,7 +3,7 @@
 MONWIDTH=$(wattr w `lsw -r`)
 
 newmails() {
-	(ls "$MAIL/new"; ls ~/var/sit-mail/Inbox/new) | wc -l
+	ls $MAIL/new | wc -l
 }
 
 # left bar
@@ -16,7 +16,7 @@ mybar 10 "bar" &
 
 # right bar
 while :; do
-	printf "%s`python -c "import datetime; date = datetime.datetime.now() + datetime.timedelta(minutes=2); print(date.strftime('%d.%m  %H:%M'))"`\n" "%{c}"
+	printf "%s`python -c "import datetime; date = datetime.datetime.now() + datetime.timedelta(minutes=3); print(date.strftime('%d.%m  %H:%M'))"`\n" "%{c}"
 	sleep 10s
 done |\
 
