@@ -83,7 +83,7 @@ backup() {
 
 main() {
 	case $1 in
-		b) backup > ~/var/log/backup 2>&1 & ;;
+		b) backup ;;
 		l) borg list $BORG_REPO ;;
 		i) borg info $BORG_REPO ;;
 		*) usage ;;
