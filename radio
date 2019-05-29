@@ -1,17 +1,21 @@
 #!/bin/sh
 
 PID_FILE=$HOME/tmp/.radio
+RADIO_FILE=$HOME/.radio
 
 usage() {
 	echo "Usage: $(basename $0) [-hl] <station>"
 	echo ""
 	echo "stations: dfl nova kultur"
+	exit 1
 }
 
 
 start() {
 	mpv --quiet $URL > /dev/null 2>&1 &
 	echo $! > $PID_FILE
+
+	echo $URL > $RADIO_FILE
 }
 
 
@@ -21,12 +25,16 @@ off() {
 }
 
 
-case `echo $1 | tr '[:upper:]' '[:lower:]'` in
-	-l)     stations ;;
-	dlf)    URL='http://st01.dlf.de/dlf/01/128/mp3/stream.mp3' start ;;
-	nova)   URL='http://st03.dlf.de/dlf/03/104/ogg/stream.ogg' start ;;
-	kultur) URL='https://st02.sslstream.dlf.de/dlf/02/128/mp3/stream.mp3' start ;;
-	off|0)  off ;;
-	*)      usage ;;
+CMD=`echo $1 | tr '[:upper:]' '[:lower:]'`
+
+case $CMD in
+	dlf)    URL='http://st01.dlf.de/dlf/01/128/mp3/stream.mp3' ;;
+	nova)   URL='http://st03.dlf.de/dlf/03/104/ogg/stream.ogg' ;;
+	kultur) URL='https://st02.sslstream.dlf.de/dlf/02/128/mp3/stream.mp3' ;;
+	0)      test -f $PID_FILE && off && exit 1;;
+	-h)     usage ;;
+	*)      URL="`cat $RADIO_FILE`" ;;
 esac
 
+test -f $PID_FILE && off
+start

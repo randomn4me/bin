@@ -6,9 +6,13 @@ newmails() {
 	ls $MAIL/new | wc -l
 }
 
+batstat() {
+	test $(bat -s) = "Charging" && echo '+' || echo ' '
+}
+
 # left bar
 while :; do
-	printf "%s%4s %3d %2d\n" "%{c}" "$(vol)" "$(bat)" "$(newmails)"
+	printf "%s%4s %3d%s %-2d\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(newmails)"
 	sleep 1s
 done |\
 
