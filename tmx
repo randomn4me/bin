@@ -1,60 +1,22 @@
 #!/bin/sh
 
 usage() {
-	cat << EOF
-Usage: $(basename $0) <uni|music|coding|irssi>
-EOF
-}
-
-attach() {
-	tmux attach-session -t $SESSION_NAME 2> /dev/null
-}
-
-create() {
-	case $SESSION_NAME in
-		uni)
-			DIR="`curterm`"
-			test -z $DIR && printf "Error loading dir\n" && exit 1
-			tmux new-session -d -n "misc" -s "$SESSION_NAME"
-			for d in `ls -d $DIR/*`; do
-				test -f $d && continue
-				cd $d
-				tmux new-window -t "$SESSION_NAME" -n "$(basename $d)" -d
-			done
-			tmux kill-window -t $SESSION_NAME:misc
-			;;
-		music)
-			tmux new-session -d -n "music" -s $SESSION_NAME "ncmpcpp"
-			tmux split-window -v -p 33 -t $SESSION_NAME "cava"
-			tmux select-pane -U -t $SESSION_NAME
-			tmux set-option -t $SESSION_NAME status off
-			;;
-		signal)
-			cd ~/var/signal
-			tmux new-session -d -n "c" -s $SESSION_NAME
-			tmux split-window -v -p 10 -t $SESSION_NAME
-			tmux select-pane -U -t $SESSION_NAME
-			;;
-		coding)
-			tmux new-session -d -n "c" -s $SESSION_NAME
-			tmux split-window -v -p 33 -t $SESSION_NAME
-			tmux select-pane -U -t $SESSION_NAME
-			;;
-		irssi)
-			tmux new-session -d -n "irssi" -s $SESSION_NAME "irssi"
-			;;
-		*)
-			echo "No such session defined" > /dev/stderr
-	esac
+	echo "Usage: $(basename $0) <c>"
 }
 
 case "$1" in
-	uni)	export SESSION_NAME="uni" ;;
-	m*)		export SESSION_NAME="music" ;;
-	c*)		export SESSION_NAME="coding" ;;
-	s*)		export SESSION_NAME="signal" ;;
-	i*)		export SESSION_NAME="irssi" ;;
-	 *)		usage ;;
+	c*) SESSION_NAME="coding" ;;
+	 *) usage ;;
 esac
 
-attach || ( create && attach )
+if ! tmux has-session -t $SESSION_NAME 2> /dev/null ; then
+	case $SESSION_NAME in
+		coding)
+			tmux new-session -d -n "c" -s $SESSION_NAME
+			tmux split-window -v -p 20 -t $SESSION_NAME
+			tmux select-pane -U -t $SESSION_NAME
+			;;
+	esac
+fi
+
+tmux attach-session -t $SESSION_NAME

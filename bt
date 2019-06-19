@@ -10,7 +10,7 @@ EOF
 }
 
 off() {
-	echo -e "power off\n" | bluetoothctl
+	echo -e "power off\n" | bluetoothctl > /dev/null 2>&1
 }
 
 case $1 in
