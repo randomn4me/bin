@@ -1,15 +1,13 @@
 #!/bin/sh
 # sends first arg as notification
 
-test $# -eq 0 && exit 1
-
+STRING="${@:-$(</dev/stdin)}"
 SLEEP=${SLEEP:-3}
 
 MON_WIDTH=$(wattr w `lsw -r`)
 export WIDTH="$(( MON_WIDTH / 5 ))"
-TEXT="$@"
 
 (
-	echo "%{c}${TEXT:0:50}"
+	echo "%{c}${STRING:0:50}"
 	sleep "$SLEEP" 
 ) | mybar "$(( MON_WIDTH / 2 - WIDTH / 2))" "notify" &

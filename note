@@ -1,0 +1,8 @@
+#!/bin/sh
+
+FILE=$(date +"%F")-note.md
+
+test ! $(basename $PWD) = "notes" && echo "not in notes directory" && exit
+
+test ! -f $FILE && touch $FILE
+vim $FILE
