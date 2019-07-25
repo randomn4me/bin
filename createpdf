@@ -1,0 +1,18 @@
+#!/bin/sh
+
+test $# -le 2 && echo "Usage: $(basename $0) output files..." && exit
+test -e $1 && echo "Destination exists" && exit
+
+OUTPUT=$1
+shift 1
+
+convert $@ \
+	-compress jpeg \
+	-quality 75 \
+	-resize 1240x1754 \
+	-extent 1240x1754 \
+	-gravity center \
+	-units PixelsPerInch \
+	-density 150x150 \
+	$OUTPUT
+
