@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MPDPID=$(pidof mpd)
+MPDPID=$(pgrep mpd)
 STATEFILE="$HOME/.config/mpd/state"
 
 status() {
@@ -13,9 +13,9 @@ status() {
     esac
 }
 
-[ ! $MPDPID ] && printf "Error: MPD is not running\n" && exit 1
+[ ! $MPDPID ] && printf "Error: mpd is not running\n" && exit 1
 
 while :; do
     printf "  %s\n" "$(status)"
     sleep 1
-done | WIDTH=300 mybar 122 "mpdbar"
+done | WIDTH=650 mybar 190 "mpdbar"

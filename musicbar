@@ -1,0 +1,18 @@
+#!/bin/bash
+
+which playerctl > /dev/null 2>&1 || \
+	( echo "Error: playerctl not installed" && exit 1 )
+
+PROCESSPID=$(pgrep spotifyd || \
+	pgrep mpd || pgrep mopidy || pgrep ncspot || pgrep mpv)
+
+[ ! $PROCESSPID ] && echo "Error: no player is running" && exit 1
+
+get() {
+	playerctl metadata "$1" 2> /dev/null
+}
+
+while :; do
+	echo "  $(get artist) - $(get title)"
+	sleep 1
+done | WIDTH=650 mybar 190 "musicbar" &
