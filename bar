@@ -10,9 +10,13 @@ batstat() {
 	test $(bat -s) = "Charging" && echo '+' || echo ' '
 }
 
+timetracking() {
+	test -f $HOME/tmp/.timetracker && echo + || echo -
+}
+
 # left bar
 while :; do
-	printf "%s%4s %3d%s %-2d\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(newmails)"
+	printf "%s%3s  %3d%s %s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(timetracking)"
 	sleep 1s
 done |\
 
@@ -24,4 +28,4 @@ while :; do
 	sleep 10s
 done |\
 
-mybar $(( MONWIDTH - MONWIDTH / 15 - 10)) "bar" &
+mybar $(( MONWIDTH - 150 - 10)) "bar" &
