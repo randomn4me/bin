@@ -1,0 +1,42 @@
+#!/usr/bin/python
+
+import sys
+
+from bs4 import BeautifulSoup
+import pandas
+import requests
+
+CONFERENCE_URL = 'http://portal.core.edu.au/conf-ranks/?by=all&sort=arank&search='
+JOURNAL_URL = 'http://portal.core.edu.au/jnl-ranks/?by=all&sort=arank&search='
+
+
+def usage(program_name: str):
+    print(f'{program_name}: <search-string>')
+    exit(1)
+
+
+def search(url: str):
+    response = requests.get(f'{url}{" ".join(sys.argv[1:])}')
+    soup = BeautifulSoup(response.text, features='lxml')
+
+    results = []
+    for line in soup.findAll('tr', {'class': ['evenrow', 'oddrow']}):
+        results.append([field.text.strip() for field in line.findAll('td')])
+
+    df = pandas.DataFrame(results,
+                          columns=['title', 'acronym', 'source', 'rank',
+                                   'dblp', 'hasdata', 'primaryfor', 'comments',
+                                   'rating'])
+
+    if df.empty:
+        return 'no result'
+
+    return df[['acronym', 'rank', 'title']].to_string(index=False, justify='left')
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        usage(sys.argv[0])
+
+    print(search(CONFERENCE_URL))
+

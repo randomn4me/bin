@@ -1,0 +1,143 @@
+#!/usr/bin/python
+import subprocess
+from datetime import datetime
+import os
+import time
+import sys
+
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options, Log
+import youtube_dl
+
+URL = "https://www.ardmediathek.de/ard/sendung/sandmann/Y3JpZDovL3JiYi1vbmxpbmUuZGUvc2FuZG1hbm4/"
+VIDEO_XPATH = './/div[@class="Root-sc-1qgar2i-1 bXqHdK"]'
+TIME_XPATH = './/div[@class="Line-sc-1qgar2i-10 Subline-sc-1qgar2i-13 dzWKQz"]'
+
+PATH = os.path.join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
+
+
+def usage(program_name: str):
+    print(f'Usage: {program_name} [episodename]')
+    exit(1)
+
+
+def err(msg: str):
+    print(f'[!] {msg}')
+    exit(1)
+
+
+def set_options():
+    options = Options()
+    log = Log()
+    log.level = "TRACE"
+    options.add_argument(log.level)
+    options.headless = True
+
+    return options
+
+
+def browse():
+    options = set_options()
+    try:
+        browser = webdriver.Firefox(
+            options=options,
+            service_log_path='/tmp/geckdriver_log.log')
+        browser.get(URL)
+        return browser
+    except Exception:
+        err('Error contacting URL')
+
+
+def clean_title(title: str):
+    return '-'.join(title.split()[3:-1]).lower()
+
+
+def clean_date(date_str: str):
+    return datetime.strptime(date_str[:10], '%d.%m.%Y').date()
+
+
+def extract_information(field):
+    title = clean_title(field.get_attribute('title'))
+    date = clean_date(field.find_elements_by_xpath(TIME_XPATH)[0].text)
+    link = field.find_elements_by_xpath('.//a')[0].get_attribute('href')
+    return (title, date, link)
+
+
+def set_youtube_options(path_str: str):
+    return {
+        'outtmpl': f'{path_str}',
+        'format': 'best'
+    }
+
+
+def download(options: dict, title: str, date: datetime.date, link: str):
+    with youtube_dl.YoutubeDL(options) as ydl:
+        try:
+            ydl.download([link])
+        except Exception:
+            print(f'error downloading {date}-{title}')
+
+
+def exists(path: str):
+    return os.path.isfile(path)
+
+
+def crawl():
+    browser = browse()
+
+    for (i, field) in enumerate(browser.find_elements_by_xpath(VIDEO_XPATH)):
+        title, date, link = extract_information(field)
+
+        if ('gebärdensprache') in title:
+            continue
+
+        destination = f'{os.path.join(PATH, title, str(date))}.mp4'
+        if not exists(destination):
+            options = set_youtube_options(destination)
+            download(options, title, date, link)
+        else:
+            print(f'exists {date} {title}')
+
+    time.sleep(0.1)
+    browser.delete_all_cookies()
+    browser.close()
+
+
+def latest_file(paths: list):
+    return max(paths, key=os.path.getctime)
+
+
+def play_path(path: str):
+    result = subprocess.Popen(['mpv', '--no-terminal', path])
+
+
+def play_episode(episode_name: str):
+    dirs = [file for file in os.listdir(PATH) if os.path.isdir(os.path.join(PATH, file)) and episode_name in file]
+    if len(dirs) == 1:
+        path = os.path.join(PATH, dirs[0])
+        file_paths = [os.path.join(path, file) for file in os.listdir(path)]
+        play_path(latest_file(file_paths))
+    elif len(dirs) > 1:
+        print('\n'.join(dirs))
+        err('be more specific')
+    else:
+        print(dirs)
+        err('pick one')
+
+
+def play_latest():
+    dirs = [file for file in os.listdir(PATH) if os.path.isdir(os.path.join(PATH, file))]
+    files = [os.path.join(PATH, dir, file) for dir in dirs for file in os.listdir(os.path.join(PATH, dir)) if os.path.isfile(os.path.join(PATH, dir, file))]
+    play_path(latest_file(files))
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        play_latest()
+    elif sys.argv[1] == 'h':
+        usage(sys.argv[0])
+    elif sys.argv[1] == 'c':
+        crawl()
+    else:
+        play_episode(sys.argv[1])
+
