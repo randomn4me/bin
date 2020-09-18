@@ -1,8 +1,0 @@
-#!/bin/bash
-
-DIR="$HOME/usr/docs/uni/msc_itsec"
-test ! -d $DIR && exit 1
-
-CURTERM="$DIR/$(ls -t1 $DIR | head -n1)"
-
-printf "%s\n" $CURTERM

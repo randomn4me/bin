@@ -1,9 +1,0 @@
-#!/bin/sh
-
-DIR="$HOME/usr/pics/photos/kids"
-
-cd "$DIR"
-
-while :; do
-    ls | sort -R | head -1; sleep 60s
-done | meh -ctl &
