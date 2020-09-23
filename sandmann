@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import subprocess
-from datetime import datetime
+from datetime import datetime, date
 import os
+from os.path import join, isfile, isdir, getctime, basename
 import time
 import sys
 
@@ -13,7 +14,7 @@ URL = "https://www.ardmediathek.de/ard/sendung/sandmann/Y3JpZDovL3JiYi1vbmxpbmUu
 VIDEO_XPATH = './/div[@class="Root-sc-1qgar2i-1 bXqHdK"]'
 TIME_XPATH = './/div[@class="Line-sc-1qgar2i-10 Subline-sc-1qgar2i-13 dzWKQz"]'
 
-PATH = os.path.join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
+PATH = join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
 
 
 def usage(program_name: str):
@@ -79,7 +80,7 @@ def download(options: dict, title: str, date: datetime.date, link: str):
 
 
 def exists(path: str):
-    return os.path.isfile(path)
+    return isfile(path)
 
 
 def crawl():
@@ -91,7 +92,7 @@ def crawl():
         if ('gebärdensprache') in title:
             continue
 
-        destination = f'{os.path.join(PATH, title, str(date))}.mp4'
+        destination = f'{join(PATH, title, str(date))}.mp4'
         if not exists(destination):
             options = set_youtube_options(destination)
             download(options, title, date, link)
@@ -103,19 +104,27 @@ def crawl():
     browser.close()
 
 
-def latest_file(paths: list):
-    return max(paths, key=os.path.getctime)
+def get_date_from_path(path: str):
+    return date.fromisoformat(basename(path)[:-4])
 
+
+def latest_file(paths: list):
+    return max(paths, key=get_date_from_path)
+
+
+def get_files():
+    dirs = [file for file in os.listdir(PATH) if isdir(join(PATH, file))]
+    return [join(PATH, dir, file) for dir in dirs for file in os.listdir(join(PATH, dir)) if isfile(join(PATH, dir, file)) and file.endswith('.mp4')]
 
 def play_path(path: str):
     result = subprocess.Popen(['mpv', '--no-terminal', path])
 
 
 def play_episode(episode_name: str):
-    dirs = [file for file in os.listdir(PATH) if os.path.isdir(os.path.join(PATH, file)) and episode_name in file]
+    dirs = [file for file in os.listdir(PATH) if isdir(join(PATH, file)) and episode_name in file]
     if len(dirs) == 1:
-        path = os.path.join(PATH, dirs[0])
-        file_paths = [os.path.join(path, file) for file in os.listdir(path)]
+        path = join(PATH, dirs[0])
+        file_paths = [join(path, file) for file in os.listdir(path)]
         play_path(latest_file(file_paths))
     elif len(dirs) > 1:
         print('\n'.join(dirs))
@@ -126,8 +135,7 @@ def play_episode(episode_name: str):
 
 
 def play_latest():
-    dirs = [file for file in os.listdir(PATH) if os.path.isdir(os.path.join(PATH, file))]
-    files = [os.path.join(PATH, dir, file) for dir in dirs for file in os.listdir(os.path.join(PATH, dir)) if os.path.isfile(os.path.join(PATH, dir, file))]
+    files = get_files()
     play_path(latest_file(files))
 
 

@@ -39,6 +39,10 @@ def read_file_seconds(filepath: str):
         content = f.read().split('\n')
 
     times = [datetime.datetime.strptime(line, STRF_STRING) for line in content if line]
+    if not (len(times) % 2) == 0:
+        times.append(datetime.datetime.strptime(datetime.datetime.now().strftime(STRF_STRING),
+            STRF_STRING))
+
     start_end = zip(times[0::2], times[1::2])
     total = sum((end - start for (start, end) in start_end), datetime.timedelta())
     return total.total_seconds()

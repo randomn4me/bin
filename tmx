@@ -6,6 +6,7 @@ usage() {
 
 case "$1" in
 	c*) SESSION_NAME="coding" ;;
+	m*) SESSION_NAME="ncspot" ;;
 	 *) usage ;;
 esac
 
@@ -15,6 +16,9 @@ if ! tmux has-session -t $SESSION_NAME 2> /dev/null ; then
 			tmux new-session -d -n "c" -s $SESSION_NAME
 			tmux split-window -v -p 20 -t $SESSION_NAME
 			tmux select-pane -U -t $SESSION_NAME
+			;;
+		ncspot)
+			tmux new-session -d -s $SESSION_NAME "ncspot"
 			;;
 	esac
 fi

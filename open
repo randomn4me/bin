@@ -7,18 +7,14 @@ usage() {
 
 open() {
 	case "$1" in
-		*md|*c|*py)
-			urxvt -e /bin/sh -c "vim "$1""
-			;;
+		*md|*c|*py|*txt)
+			vim "$1" ;;
 		*png|*jpg|*jpeg|*JPG)
-			meh "$1"
-			;;
+			meh "$1" ;;
 		*pdf)
-			mupdf "$1"
-			;;
+			evince "$1" ;;
 		*mp4|*mkv|*mpv|*MTS|*mts|*MPG)
-			mpv "$1"
-			;;
+			mpv "$1" ;;
 		*)
 			echo "Fallback to xdg-open" > /dev/stderr
 			xdg-open "$1" > /dev/null

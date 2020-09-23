@@ -2,4 +2,4 @@
 
 export WIDTH="$(( $(wattr w `lsw -r`) / 2 ))"
 
-dmenu_open "$HOME/var/nextcloud/paper" "*.pdf" "uniopen"
+dmenu_open "$HOME/var/nextcloud/paper" "*.pdf" "paperopen"

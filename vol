@@ -5,28 +5,22 @@ shopt -s extglob
 CHANNEL=$(amixer | sed " 1s/^.*'\(.*\)'.*/\1/p;d")
 
 usage() {
-    echo "usage : $(basename $0) [shlt-+]"
+    echo "usage : $(basename $0) [t-+]"
 }
 
 level() {
-    amixer get "$CHANNEL" | sed -n 's/^.*\[\([0-9]\+\)%.*$/\1/p' | uniq
+    pamixer --get-volume-human | tr -d '%'
 }
 
-state() {
-    amixer get "$CHANNEL" | sed -n 's/^.*\[\(o[nf]\+\)\]$/\1/p' | uniq
-}
-
-which amixer > /dev/null 2>&1 \
+which pamixer > /dev/null 2>&1 \
     || ( echo "amixer not installed" && exit 1 )
 
 test "$#" -eq 0 && echo "$(level)" && exit 0
 
 case "$1" in
-    s)  state ;;
-    h)  usage ;;
-    t)  pamixer -t > /dev/null ;;
-    +)  pamixer --increase 5 > /dev/null ;;
-    -)  pamixer --decrease 5 > /dev/null ;;
-    +([[:digit:]]) ) pamixer --set-volume $1 ;;
-    *)  usage ;;
+    t)              pamixer -t > /dev/null ;;
+    +)              pamixer --increase 5 > /dev/null ;;
+    -)              pamixer --decrease 5 > /dev/null ;;
+    +([[:digit:]])) pamixer --set-volume $1 ;;
+    *)              usage ;;
 esac

@@ -1,14 +1,10 @@
 #!/bin/bash
 
-DEVICE="$(xinput list --name-only | grep -E "[Tt]ouchpad")"
+DEVICE="$(xinput list --name-only | grep -E "[Tt]ouch[Pp]ad")"
 
 usage() {
     cat << EOF
-Usage: $(basename $0) [on|1] [off|0] [toggle|t]
-Options:
-  on|1      : Enable touchpad 
-  off|0     : Disable touchpad 
-  toggle|t  : Toggle device
+Usage: $(basename $0) <0|1|t>
 EOF
 }
 
