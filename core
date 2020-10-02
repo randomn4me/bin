@@ -10,7 +10,7 @@ CONFERENCE_URL = 'http://portal.core.edu.au/conf-ranks/?by=all&sort=arank&search
 JOURNAL_URL = 'http://portal.core.edu.au/jnl-ranks/?by=all&sort=arank&search='
 
 
-def usage(program_name: str): sys.exit(f'{basename(program_name)}: [j] <search-string>')
+def usage(program_name: str): sys.exit(f'Usage: {basename(program_name)} [j] <search-string>')
 def err(msg: str): sys.exit(f'[!] {msg}')
 
 
