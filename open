@@ -15,6 +15,8 @@ open() {
 			evince "$1" ;;
 		*mp4|*mkv|*mpv|*MTS|*mts|*MPG)
 			mpv "$1" ;;
+		*docx|*xlsx|*pptx)
+			libreoffice "$1" ;;
 		*)
 			echo "Fallback to xdg-open" > /dev/stderr
 			xdg-open "$1" > /dev/null
