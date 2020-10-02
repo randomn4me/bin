@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
 import datetime
-import csv
 import os
 import sys
 
-TMP_FILE = os.path.join(os.getenv('HOME'), 'tmp', '.timetracker')
+from os.path import join, isdir, isfile, basename
+
+TMP_FILE = join(os.getenv('HOME'), 'tmp', '.timetracker')
 TODAY = datetime.date.today()
-BASE_DIR = os.path.join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker')
+BASE_DIR = join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker')
 STRF_STRING = '%H:%M'
 
 
@@ -17,15 +18,15 @@ def err(msg: str):
 
 
 def setup():
-    dir = os.path.join(BASE_DIR, TODAY.strftime('%Y-%m'))
+    dir = join(BASE_DIR, TODAY.strftime('%Y-%m'))
 
-    if not os.path.isdir(dir):
+    if not isdir(dir):
         os.makedirs(dir)
 
 
 def log():
     time = datetime.datetime.now()
-    with open(os.path.join(str(BASE_DIR), TODAY.strftime('%Y-%m'), str(TODAY)), 'a') as f:
+    with open(join(str(BASE_DIR), TODAY.strftime('%Y-%m'), str(TODAY)), 'a') as f:
         f.write(f'{time.strftime(STRF_STRING)}\n')
 
 
@@ -60,35 +61,38 @@ def get_time(total_seconds: int, num_files: int):
 
 
 def start_logging():
-    if os.path.isfile(TMP_FILE):
+    if isfile(TMP_FILE):
         err('already logging')
     os.mknod(TMP_FILE)
     log()
 
 
 def stop_logging():
-    if not os.path.isfile(TMP_FILE):
+    if not isfile(TMP_FILE):
         err('not logging')
     log()
     os.remove(TMP_FILE)
 
 
-def total(date_str: str):
-    dir = os.path.join(BASE_DIR, date_str)
-    if not os.path.isdir(dir):
-        err(f'no logs for {date_str}')
+def total(date_str: str = None):
+    if date_str:
+        dirs = [join(BASE_DIR, date_str)]
+        if not isdir(dirs[0]):
+            err(f'no logs for {date_str}')
+    else:
+        dirs = [join(BASE_DIR, d) for d in os.listdir(BASE_DIR) if isdir(join(BASE_DIR, d))]
 
-    files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
-    seconds = sum([read_file_seconds(os.path.join(dir, days)) for days in files])
+    files = [join(d, f) for d in dirs for f in os.listdir(d) if isfile(join(d, f))]
+    seconds = sum([read_file_seconds(f) for f in files])
 
-    print(get_time(seconds, sum(1 for f in files if is_weekday(f))))
+    print(get_time(seconds, sum(1 for f in files if is_weekday(basename(f)))))
 
 
 if __name__ == "__main__":
     setup()
 
     if len(sys.argv) < 2:
-        total(datetime.date.today().strftime('%Y-%m'))
+        total()
     elif sys.argv[1] == "0":
         stop_logging()
     elif sys.argv[1] == "1":
