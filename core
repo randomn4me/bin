@@ -2,41 +2,44 @@
 
 import sys
 
-from bs4 import BeautifulSoup
-import pandas
-import requests
+from os.path import basename
+from pandas import read_html
+from tabulate import tabulate
 
 CONFERENCE_URL = 'http://portal.core.edu.au/conf-ranks/?by=all&sort=arank&search='
 JOURNAL_URL = 'http://portal.core.edu.au/jnl-ranks/?by=all&sort=arank&search='
 
 
-def usage(program_name: str):
-    print(f'{program_name}: <search-string>')
-    exit(1)
+def usage(program_name: str): sys.exit(f'{basename(program_name)}: [j] <search-string>')
+def err(msg: str): sys.exit(f'[!] {msg}')
 
 
-def search(url: str):
-    response = requests.get(f'{url}{" ".join(sys.argv[1:])}')
-    soup = BeautifulSoup(response.text, features='lxml')
+def search(url: str, query: str):
+    try:
+        df = read_html(f'{url}{query}')[0]
+    except:
+        err('query unsuccessful')
 
-    results = []
-    for line in soup.findAll('tr', {'class': ['evenrow', 'oddrow']}):
-        results.append([field.text.strip() for field in line.findAll('td')])
+    try: # conference columns
+        result = df[['Rank', 'Acronym', 'Title']]
+    except: # journal columns
+        result = df[['Rank', 'Title']]
 
-    df = pandas.DataFrame(results,
-                          columns=['title', 'acronym', 'source', 'rank',
-                                   'dblp', 'hasdata', 'primaryfor', 'comments',
-                                   'rating'])
-
-    if df.empty:
-        return 'no result'
-
-    return df[['acronym', 'rank', 'title']].to_string(index=False, justify='left')
+    print(tabulate(result, headers='keys', tablefmt='plain', showindex=False))
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         usage(sys.argv[0])
 
-    print(search(CONFERENCE_URL))
+    if sys.argv[1] == 'j':
+        search_url = JOURNAL_URL
+        query_start = 2
+    else:
+        search_url = CONFERENCE_URL
+        query_start = 1
 
+    if len(sys.argv) >= query_start:
+        search(search_url, '+'.join(sys.argv[query_start:]))
+    else:
+        usage(sys.argv[0])
