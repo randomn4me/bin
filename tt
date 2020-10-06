@@ -19,15 +19,14 @@ def err(msg: str):
 
 def setup():
     dir = join(BASE_DIR, TODAY.strftime('%Y-%m'))
-
     if not isdir(dir):
         os.makedirs(dir)
 
 
 def log():
     time = datetime.datetime.now()
-    with open(join(str(BASE_DIR), TODAY.strftime('%Y-%m'), str(TODAY)), 'a') as f:
-        f.write(f'{time.strftime(STRF_STRING)}\n')
+    today_path = join(str(BASE_DIR), TODAY.strftime('%Y-%m'), str(TODAY))
+    with open(today_path, 'a') as f: f.write(f'{time.strftime(STRF_STRING)}\n')
 
 
 def usage(program: str):
@@ -41,8 +40,7 @@ def read_file_seconds(filepath: str):
 
     times = [datetime.datetime.strptime(line, STRF_STRING) for line in content if line]
     if not (len(times) % 2) == 0:
-        times.append(datetime.datetime.strptime(datetime.datetime.now().strftime(STRF_STRING),
-            STRF_STRING))
+        times.append(datetime.datetime.strptime(datetime.datetime.now().strftime(STRF_STRING), STRF_STRING))
 
     start_end = zip(times[0::2], times[1::2])
     total = sum((end - start for (start, end) in start_end), datetime.timedelta())
@@ -53,8 +51,8 @@ def is_weekday(date_str: str):
     return datetime.datetime.fromisoformat(date_str).weekday() < 5
 
 
-def get_time(total_seconds: int, num_files: int):
-    compared = total_seconds - num_files * 28800 # seconds to work a day (8h)
+def get_time(total_seconds: int):
+    compared = total_seconds
     hours = int(float(compared) / 3600)
     minutes = int(float(compared - hours * 3600) / 60)
     return f'{hours}h {minutes}m'
@@ -74,18 +72,32 @@ def stop_logging():
     os.remove(TMP_FILE)
 
 
+def month_total(dir_path: str, store_total: bool = False):
+    if 'total' in os.listdir(dir_path):
+        with open(join(dir_path, 'total'), 'r') as f:
+            return int(float(f.read().strip()))
+
+    files = [f for f in os.listdir(dir_path) if isfile(join(dir_path, f))]
+    total_seconds = sum([read_file_seconds(join(dir_path, f)) for f in files]) - sum(28800 for f in files if is_weekday(f))
+
+    if store_total:
+        with open(join(dir_path, 'total'), 'w') as f:
+            f.write(str(total_seconds))
+    return total_seconds
+
+
 def total(date_str: str = None):
     if date_str:
         dirs = [join(BASE_DIR, date_str)]
         if not isdir(dirs[0]):
             err(f'no logs for {date_str}')
     else:
-        dirs = [join(BASE_DIR, d) for d in os.listdir(BASE_DIR) if isdir(join(BASE_DIR, d))]
+        dirs = [d for d in os.listdir(BASE_DIR) if isdir(join(BASE_DIR, d))]
 
-    files = [join(d, f) for d in dirs for f in os.listdir(d) if isfile(join(d, f))]
-    seconds = sum([read_file_seconds(f) for f in files])
+    cur_month = TODAY.strftime('%Y-%m')
+    total_seconds = sum(month_total(join(BASE_DIR, d), d != cur_month) for d in dirs)
 
-    print(get_time(seconds, sum(1 for f in files if is_weekday(basename(f)))))
+    print(get_time(total_seconds))
 
 
 if __name__ == "__main__":
