@@ -8,11 +8,13 @@ usage() {
 lockon() {
 	xss-lock -- lock &
 	xautolock -corners '000-' -locker lock -time 5 -notify 30 -notifier 'notify "sleeping soon"' &
+	notify 'screensaver on'
 }
 
 lockoff() {
 	pkill xss-lock
 	pkill xautolock
+	notify 'screensaver off'
 }
 
 case "$1" in
