@@ -1,0 +1,11 @@
+#!/bin/sh
+
+usage() {
+	echo "Usage: $(basename $0) [h] <w|t>"
+}
+
+case $1 in
+	w) nmcli dev status | grep -e 'wifi\s*connected' | column -t -o',' | cut -d',' -f4 | notify ;;
+	t) tt | notify ;;
+	*) usage ;;
+esac
