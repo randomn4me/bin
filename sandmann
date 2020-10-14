@@ -24,7 +24,7 @@ def usage(program_name: str):
 
 def err(msg: str):
     print(f'[!] {msg}')
-    exit(1)
+    sys.exit(1)
 
 
 def set_options():
@@ -115,6 +115,7 @@ def latest_file(paths: list):
 def get_files():
     dirs = [file for file in os.listdir(PATH) if isdir(join(PATH, file))]
     return [join(PATH, dir, file) for dir in dirs for file in os.listdir(join(PATH, dir)) if isfile(join(PATH, dir, file)) and file.endswith('.mp4')]
+
 
 def play_path(path: str):
     result = subprocess.Popen(['mpv', '--no-terminal', path])
