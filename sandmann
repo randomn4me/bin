@@ -11,8 +11,8 @@ from selenium.webdriver.firefox.options import Options, Log
 import youtube_dl
 
 URL = "https://www.ardmediathek.de/ard/sendung/sandmann/Y3JpZDovL3JiYi1vbmxpbmUuZGUvc2FuZG1hbm4/"
-VIDEO_XPATH = './/div[@class="Root-sc-1qgar2i-1 bXqHdK"]'
-TIME_XPATH = './/div[@class="Line-sc-1qgar2i-10 Subline-sc-1qgar2i-13 dzWKQz"]'
+ELEMENT_XPATH = './/div[@class="src__Box-sc-1sbtrzs-0 Column-wbrv0h-1 InfiniteScrollingColumn-ge0py7-1 fYzzeq cXpOce eqzmJU"]'
+TIME_XPATH = './/div[@class="Line-e9mkkr-2 Subline-e9mkkr-4 iTBCan dOcYgD"]'
 
 PATH = join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
 
@@ -49,18 +49,14 @@ def browse():
         err('Error contacting URL')
 
 
-def clean_title(title: str):
-    return '-'.join(title.split()[3:-1]).lower()
-
-
 def clean_date(date_str: str):
     return datetime.strptime(date_str[:10], '%d.%m.%Y').date()
 
 
 def extract_information(field):
-    title = clean_title(field.get_attribute('title'))
-    date = clean_date(field.find_elements_by_xpath(TIME_XPATH)[0].text)
-    link = field.find_elements_by_xpath('.//a')[0].get_attribute('href')
+    link = field.find_element_by_xpath('.//a').get_attribute('href')
+    title = [title for title in link.split('/') if 'unser-sandmaennchen' in title][0][24:]
+    date = clean_date(field.find_element_by_xpath(TIME_XPATH).text)
     return (title, date, link)
 
 
@@ -86,10 +82,10 @@ def exists(path: str):
 def crawl():
     browser = browse()
 
-    for (i, field) in enumerate(browser.find_elements_by_xpath(VIDEO_XPATH)):
+    for (i, field) in enumerate(browser.find_elements_by_xpath(ELEMENT_XPATH)):
         title, date, link = extract_information(field)
 
-        if ('gebärdensprache') in title:
+        if ('mit-gebaerdensprache') in title:
             continue
 
         destination = f'{join(PATH, title, str(date))}.mp4'
