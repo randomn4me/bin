@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+import urllib.request
+
+from bs4 import BeautifulSoup
+from tabulate import tabulate
+
+URL = 'https://soziales.hessen.de/gesundheit/corona-hessen/taegliche-uebersicht-der-bestaetigten-sars-cov-2-faelle'
+TABLE_CLASS = 'hzd_responsive_tables-processed'
+
+with urllib.request.urlopen(URL) as response:
+    html = response.read()
+
+soup = BeautifulSoup(html, 'html.parser')
+table_class_tag = soup.find('table')
+
+rows = [[ele.text.strip().replace('.', '').lower() for ele in row.find_all('td')] for row in table_class_tag.find_all('tr')[2:-1]]
+print(tabulate(rows, headers=['kreis', 'diff_num', 'diff_deaths', 'all_num', 'all_deaths', '7-day_num', 'incidence']))
