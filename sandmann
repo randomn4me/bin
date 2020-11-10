@@ -18,7 +18,7 @@ PATH = join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
 
 
 def usage(program_name: str):
-    print(f'Usage: {program_name} [episodename]')
+    print(f'Usage: {basename(program_name)} [l [num|name]] [c] [p yyyy-mm-dd] [story]')
     exit(1)
 
 
@@ -72,11 +72,7 @@ def download(options: dict, title: str, date: datetime.date, link: str):
         try:
             ydl.download([link])
         except Exception:
-            print(f'error downloading {date}-{title}')
-
-
-def exists(path: str):
-    return isfile(path)
+            err(f'error downloading {date}-{title}')
 
 
 def crawl():
@@ -89,11 +85,11 @@ def crawl():
             continue
 
         destination = f'{join(PATH, title, str(date))}.mp4'
-        if not exists(destination):
+        if not isfile(destination):
             options = set_youtube_options(destination)
             download(options, title, date, link)
         else:
-            print(f'exists {date} {title}')
+            print(f'isfile {date} {title}')
 
     time.sleep(0.1)
     browser.delete_all_cookies()
@@ -104,45 +100,89 @@ def get_date_from_path(path: str):
     return date.fromisoformat(basename(path)[:-4])
 
 
-def latest_file(paths: list):
+def latest(paths: list):
     return max(paths, key=get_date_from_path)
 
 
-def get_files():
-    dirs = [file for file in os.listdir(PATH) if isdir(join(PATH, file))]
-    return [join(PATH, dir, file) for dir in dirs for file in os.listdir(join(PATH, dir)) if isfile(join(PATH, dir, file)) and file.endswith('.mp4')]
+def episodes(dir_path: str):
+    return [join(dir_path, f) for f in os.listdir(dir_path) if isfile(join(dir_path, f)) and f.endswith('.mp4')]
 
 
-def play_path(path: str):
+def stories(name: str = ''):
+    return [story for story in os.listdir(PATH) if isdir(join(PATH, story)) and name in story]
+
+
+def all_files():
+    return [f for d in map(lambda s: join(PATH, s), stories()) for f in episodes(d)]
+
+
+def play(path: str):
+    if not path or not isfile(path) or not path.endswith('.mp4'):
+        err(f'error playing path')
+    print(f'playing {path}')
     result = subprocess.Popen(['mpv', '--no-terminal', path])
 
 
-def play_episode(episode_name: str):
-    dirs = [file for file in os.listdir(PATH) if isdir(join(PATH, file)) and episode_name in file]
-    if len(dirs) == 1:
-        path = join(PATH, dirs[0])
-        file_paths = [join(path, file) for file in os.listdir(path)]
-        play_path(latest_file(file_paths))
-    elif len(dirs) > 1:
-        print('\n'.join(dirs))
+def identify_story(user_input: str):
+    s = stories(user_input)
+    if len(s) == 1:
+        path = join(PATH, s[0])
+        return path
+    elif len(s) > 1:
         err('be more specific')
     else:
-        print(dirs)
-        err('pick one')
+        err('not included')
 
 
-def play_latest():
-    files = get_files()
-    play_path(latest_file(files))
+def validate_date_str(user_input: str):
+    try:
+        date.fromisoformat(user_input)
+    except:
+        err('no yyyy-mm-dd given')
+    return user_input
+
+
+def find(user_input: str):
+    f = [f for f in all_files() if user_input in f]
+    if not f:
+        err('no file found')
+    return f[0]
+
+
+def convert_list_arg(user_input: str):
+    try:
+        user_input = int(user_input)
+    except Exception:
+        pass
+    return user_input
+
+
+def show(l: list):
+    print('\n'.join(l))
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        play_latest()
-    elif sys.argv[1] == 'h':
+        play(latest(all_files()))
+        sys.exit()
+
+    if sys.argv[1] == 'h':
         usage(sys.argv[0])
     elif sys.argv[1] == 'c':
         crawl()
+    elif sys.argv[1] == 'l':
+        if sys.argv[2:]:
+            value = convert_list_arg(sys.argv[2])
+            if type(value) is str:
+                show(episodes(identify_story(value)))
+            elif type(value) is int:
+                show(sorted(all_files(), key=get_date_from_path)[-value:])
+        else:
+            show(stories())
+    elif sys.argv[1] == 'p':
+        if len(sys.argv) <= 2:
+            usage(sys.argv[0])
+        play(find(validate_date_str(sys.argv[2])))
     else:
-        play_episode(sys.argv[1])
+        play(latest(episodes(identify_story(sys.argv[1]))))
 

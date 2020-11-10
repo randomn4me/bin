@@ -1,11 +1,13 @@
-# bin's
+# bins
 ----------
+
+different small script I have accumulated.
 
 including:
 
 - bar
-- notification
+- notify
 - menu
-- shutdown-menu
-- lock
+- sandmann
+- tt
 - other small stuff

@@ -14,5 +14,5 @@ with urllib.request.urlopen(URL) as response:
 soup = BeautifulSoup(html, 'html.parser')
 table_class_tag = soup.find('table')
 
-rows = [[ele.text.strip().replace('.', '').lower() for ele in row.find_all('td')] for row in table_class_tag.find_all('tr')[2:-1]]
-print(tabulate(rows, headers=['kreis', 'diff_num', 'diff_deaths', 'all_num', 'all_deaths', '7-day_num', 'incidence']))
+rows = [[ele.text.replace('.', '').replace(',', '.').lower() for ele in row.find_all('td')] for row in table_class_tag.find_all('tr')[2:]]
+print(tabulate(rows, headers=['kreis', '1d#', '1drip#', '#', 'rip#', '7d#', '7di']))

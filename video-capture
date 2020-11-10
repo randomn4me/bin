@@ -3,7 +3,7 @@
 VIDEO_DEVICE=$(v4l2-ctl --list-devices | grep 'Dummy' -a1 | tail -n1 | xargs)
 CAMERA=$(gphoto2 --auto-detect | tail -n1)
 
-test ! -c $VIDEO_DEVICE && echo "no output device; maybe reboot" && exit 1
+test ! -c "$VIDEO_DEVICE" && echo "no output device; maybe reboot" && exit 1
 grep -iq "canon" <<< "$CAMERA" || ( echo "Camera not found" && exit 1 )
 
 

@@ -1,13 +1,15 @@
 #!/bin/sh
 
-PID_FILE=$HOME/tmp/.radio
-RADIO_FILE=$HOME/.radio
+PID_FILE=/tmp/radio
+RADIO_FILE=$XDG_CACHE_HOME/radio
 
 usage() {
-	echo "Usage: $(basename $0) [-hl] <station>"
-	echo ""
-	echo "stations: dfl nova kultur"
-	exit 1
+	cat << EOF
+Usage: $(basename $0) [-hl] <station>
+
+stations: dfl nova kultur
+EOF
+	exit
 }
 
 
@@ -32,8 +34,8 @@ case $CMD in
 	kultur) URL='https://st02.sslstream.dlf.de/dlf/02/128/mp3/stream.mp3' ;;
 	nova)   URL='https://st03.sslstream.dlf.de/dlf/03/128/mp3/stream.mp3' ;;
 	0)      test -f $PID_FILE && off && exit 1;;
-	-h)     usage ;;
-	*)      test ! -f $RADIO_FILE && exit
+	h)     usage ;;
+	*)      test ! -f $RADIO_FILE && echo 'no radio file' && exit
 	        URL="`cat $RADIO_FILE`" ;;
 esac
 
