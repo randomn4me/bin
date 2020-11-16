@@ -9,7 +9,8 @@ usage() {
 }
 
 level() {
-    pamixer --get-volume-human | tr -d '%'
+	LEVEL=$(pamixer --get-volume-human | tr -d '%')
+	test $LEVEL = "muted" && echo '-' || echo $LEVEL
 }
 
 which pamixer > /dev/null 2>&1 \
