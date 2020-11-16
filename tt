@@ -25,8 +25,9 @@ def setup():
 
 def log():
     time = datetime.datetime.now()
-    today_path = join(str(BASE_DIR), TODAY.strftime('%Y-%m'), str(TODAY))
-    with open(today_path, 'a') as f: f.write(f'{time.strftime(STRF_STRING)}\n')
+    today_path = join(str(BASE_DIR), TODAY.strftime('%Y-%m'), f'{TODAY}.md')
+    with open(today_path, 'a') as f:
+        f.write(f'{time.strftime(STRF_STRING)}\n')
 
 
 def usage(program: str):
@@ -78,7 +79,7 @@ def month_total(dir_path: str, store_total: bool = False):
             return int(float(f.read().strip()))
 
     files = [f for f in os.listdir(dir_path) if isfile(join(dir_path, f))]
-    total_seconds = sum([read_file_seconds(join(dir_path, f)) for f in files]) - sum(28800 for f in files if is_weekday(f))
+    total_seconds = sum([read_file_seconds(join(dir_path, f)) for f in files]) - sum(28800 for f in files if is_weekday(f[:f.index('.')]))
 
     if store_total:
         with open(join(dir_path, 'total'), 'w') as f:
