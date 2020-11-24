@@ -11,8 +11,8 @@ from selenium.webdriver.firefox.options import Options, Log
 import youtube_dl
 
 URL = "https://www.ardmediathek.de/ard/sendung/sandmann/Y3JpZDovL3JiYi1vbmxpbmUuZGUvc2FuZG1hbm4/"
-ELEMENT_XPATH = './/div[@class="src__Box-sc-1sbtrzs-0 Column-wbrv0h-1 InfiniteScrollingColumn-ge0py7-1 fYzzeq cXpOce eqzmJU"]'
-TIME_XPATH = './/div[@class="Line-e9mkkr-2 Subline-e9mkkr-4 iTBCan dOcYgD"]'
+ELEMENT_XPATH = './/div[@class="Root-sc-1bf56nn-0 iEEQOl"]'
+TIME_XPATH = './/div[@class="Line-epbftj-1 ibukAJ"]'
 
 PATH = join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
 
@@ -89,7 +89,7 @@ def crawl():
             options = set_youtube_options(destination)
             download(options, title, date, link)
         else:
-            print(f'isfile {date} {title}')
+            print(f'exists {date} {title}')
 
     time.sleep(0.1)
     browser.delete_all_cookies()

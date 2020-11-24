@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR=$HOME/var/nextcloud/meetings
+DIR=$HOME/var/nextcloud/misc/meetings
 DATE=$(date '+%F')
 
 test -n $1 && TITLE="$1"
