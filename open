@@ -9,7 +9,7 @@ open() {
 	case "$1" in
 		*md|*c|*py|*txt)
 			vim "$1" ;;
-		*png|*jpg|*jpeg|*JPG)
+		*png|*PNG|*jpg|*jpeg|*JPG)
 			meh "$1" ;;
 		*pdf)
 			evince "$1" ;;
