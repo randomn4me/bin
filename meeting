@@ -8,4 +8,21 @@ while [ -z "$TITLE" ]; do
 	read -p 'Meeting title: ' TITLE
 done
 
-vim $DIR/${DATE}_$TITLE.md
+TMP=$HOME/tmp/${DATE}_$TITLE.md
+FINAL=$DIR/${DATE}_$TITLE.md
+
+if [ ! -f $FINAL ]; then
+	cat << EOF > $TMP
+# ${TITLE}
+Datum: ${DATE}
+Protokoll: ${USER}
+
+# TOPs
+EOF
+
+	vim $TMP
+	mv $TMP $FINAL
+else
+	vim $FINAL
+fi
+
