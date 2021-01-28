@@ -14,11 +14,11 @@ def usage(program_name:str):
 def main(bib_file: str, content_files: list):
     cite_nums = collections.defaultdict(int)
     citations = [c for f in content_files[:1] for citation in re.findall(r'\\citation[tp]?\*?{([\w\./:,]*)}', ''.join(open(f).readlines())) for c in citation.split(',')]
+
     for c in citations:
         cite_nums[c] += 1
 
     print(sorted(cite_nums.items(), key=lambda kv: kv[1])[::-1])
-
 
 
 if __name__ == '__main__':
