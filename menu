@@ -10,8 +10,7 @@ font="misc ohsnap:size=7"
 gaps="10"
 
 offset_x="$(( (monitor_width / 2) - (width / 2) ))"
-offset_y="$(( gaps / 2))"
 
 options="$@"
 
-dmenu $options -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -y "$offset_y" -nb "#000000" -nf "#c2c2b0" -sb "#c2c2b0" -sf "#000000" 2>&1
+dmenu $options -i -name "menu" -class "dmenu" -h "$height" -w "$width" -fn "$font" -x "$offset_x" -nb "#000000" -nf "#c2c2b0" -sb "#c2c2b0" -sf "#000000" 2>&1

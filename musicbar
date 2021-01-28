@@ -3,11 +3,6 @@
 which playerctl > /dev/null 2>&1 || \
 	( echo "Error: playerctl not installed" && exit 1 )
 
-PROCESSPID=$(pgrep spotifyd || \
-	pgrep mpd || pgrep mopidy || pgrep ncspot || pgrep mpv)
-
-[ ! $PROCESSPID ] && echo "Error: no player is running" && exit 1
-
 get() {
 	playerctl metadata "$1" 2> /dev/null
 }

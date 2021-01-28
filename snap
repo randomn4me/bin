@@ -1,7 +1,7 @@
 #!/bin/sh
 
 GAPS=10
-TOP_PADDING=20
+TOP_PADDING=15
 BORDER_WIDTH=1
 
 usage() {

@@ -11,7 +11,7 @@ open() {
 			vim "$1" ;;
 		*png|*PNG|*jpg|*jpeg|*JPG)
 			meh "$1" ;;
-		*pdf)
+		*pdf|*PDF)
 			evince "$1" ;;
 		*mp4|*mkv|*mpv|*MTS|*mts|*MPG)
 			mpv "$1" ;;

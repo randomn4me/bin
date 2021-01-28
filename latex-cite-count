@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import sys
+import os
+import re
+import collections
+
+
+def usage(program_name:str):
+    print(f'Usage: {os.path.basename(program_name)} <bib-file> <aux-file> [<aux-file> [..]]')
+    sys.exit(1)
+
+
+def main(bib_file: str, content_files: list):
+    cite_nums = collections.defaultdict(int)
+    citations = [c for f in content_files[:1] for citation in re.findall(r'\\citation[tp]?\*?{([\w\./:,]*)}', ''.join(open(f).readlines())) for c in citation.split(',')]
+    for c in citations:
+        cite_nums[c] += 1
+
+    print(sorted(cite_nums.items(), key=lambda kv: kv[1])[::-1])
+
+
+
+if __name__ == '__main__':
+    if len(sys.argv) <= 2:
+        usage(sys.argv[0])
+
+    if any(not os.path.isfile(f) for f in sys.argv[1:]):
+        usage(sys.argv[0])
+
+    main(sys.argv[1], sys.argv[2:])

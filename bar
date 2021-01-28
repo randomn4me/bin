@@ -20,7 +20,7 @@ while :; do
 	sleep 1s
 done |\
 
-mybar 10 "bar" &
+mybar 0 "bar" &
 
 # right bar
 while :; do
@@ -28,4 +28,4 @@ while :; do
 	sleep 10s
 done |\
 
-mybar $(( MONWIDTH - 150 - 10)) "bar" &
+mybar $((MONWIDTH - 150)) "bar" &

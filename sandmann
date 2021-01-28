@@ -81,7 +81,7 @@ def crawl():
     for (i, field) in enumerate(browser.find_elements_by_xpath(ELEMENT_XPATH)):
         title, date, link = extract_information(field)
 
-        if ('mit-gebaerdensprache') in title:
+        if any('gebaerdensprache' in item for item in [title,link]):
             continue
 
         destination = f'{join(PATH, title, str(date))}.mp4'
