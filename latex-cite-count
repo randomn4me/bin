@@ -11,9 +11,9 @@ def usage(program_name:str):
     sys.exit(1)
 
 
-def main(content_files: list):
+def main(files: list):
     cite_nums = collections.defaultdict(int)
-    citations = [c for f in content_files[:1] for citation in re.findall(r'\\citation[tp]?\*?{([\w\./:,]*)}', ''.join(open(f).readlines())) for c in citation.split(',')]
+    citations = [c for f in files for cite in re.findall(r'\\citation{([\w\./:,]*)}', open(f).read()) for c in cite.split(',')]
 
     for c in citations:
         cite_nums[c] += 1
