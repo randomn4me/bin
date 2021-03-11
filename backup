@@ -4,7 +4,7 @@
 export BORG_REPO=/mnt/backup/borg-backup
 
 # or this to ask an external program to supply the passphrase:
-export BORG_PASSCOMMAND='pass show borg/passphrase'
+#export BORG_PASSCOMMAND='pass show borg/passphrase'
 
 usage() {
 	cat <<EOF > /dev/stderr
