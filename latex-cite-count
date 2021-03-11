@@ -1,9 +1,9 @@
 #!/usr/bin/python
+# author: pkuehn
 
 import sys
 import os
 import re
-import collections
 
 
 def usage(program_name:str):
@@ -12,8 +12,8 @@ def usage(program_name:str):
 
 
 def main(files: list):
-    cite_nums = collections.defaultdict(int)
     citations = [c for f in files for cite in re.findall(r'\\citation{([\w\./:,]*)}', open(f).read()) for c in cite.split(',')]
+    cite_nums = {c:0 for c in citations}
 
     for c in citations:
         cite_nums[c] += 1
