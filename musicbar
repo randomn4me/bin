@@ -1,13 +1,10 @@
 #!/bin/bash
 
-which playerctl > /dev/null 2>&1 || \
-	( echo "Error: playerctl not installed" && exit 1 )
-
-get() {
-	playerctl metadata "$1" 2> /dev/null
-}
+MONWIDTH=$(wattr w `lsw -r`)
+export WIDTH=650
+OFFSET=$(((MONWIDTH-WIDTH)/2))
 
 while :; do
-	echo "  $(get artist) - $(get title)"
+	echo "%{c}$(mpc current)"
 	sleep 1
-done | WIDTH=650 mybar 190 "musicbar" &
+done | mybar $OFFSET "musicbar" &

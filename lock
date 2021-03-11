@@ -1,4 +1,5 @@
 #!/bin/sh
 
 which playerctl > /dev/null 2>&1 && playerctl -a pause
+mpc -q pause
 slock
