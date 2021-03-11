@@ -19,7 +19,7 @@ which pamixer > /dev/null 2>&1 \
 test "$#" -eq 0 && echo "$(level)" && exit 0
 
 case "$1" in
-    t)              pamixer -t > /dev/null ;;
+    t)              pamixer --toggle > /dev/null ;;
     +)              pamixer --increase 5 > /dev/null ;;
     -)              pamixer --decrease 5 > /dev/null ;;
     +([[:digit:]])) pamixer --set-volume $1 ;;
