@@ -1,0 +1,17 @@
+#!/bin/sh
+
+usage() {
+	echo "$(basename $0) <file> <clean-name>"
+}
+
+
+test $# -le 1 && usage && exit 1
+
+file=$1
+extension="${1##*.}"
+shift 1
+sanitized=`echo $@ | tr [A-Z\ ] [a-z\-]`
+
+test -f "$file" && mv "$file" `date +%F`_$sanitized.$extension && exit 0
+
+usage

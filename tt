@@ -1,116 +1,175 @@
 #!/usr/bin/python
 
-import datetime
+from datetime import datetime, date, timedelta
+import json
 import os
 import sys
 
-from os.path import join, isdir, isfile, basename
+from os.path import join, isdir, isfile, splitext, basename, exists, realpath, dirname
+
 
 TMP_FILE = join(os.getenv('HOME'), 'tmp', '.timetracker')
-TODAY = datetime.date.today()
 BASE_DIR = join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker')
 STRF_STRING = '%H:%M'
+POSSIBLE_STATUS = {'s': 'sick',
+                   'v': 'vacation',
+                   'wd': 'weekday',
+                   'we': 'weekend'}
+
+
+def usage():
+    print(f'Usage: {basename(sys.argv[0])} <0|1|t|s <s|v>>')
+    sys.exit(1)
 
 
 def err(msg: str):
     print(f'[!] {msg}')
-    exit(1)
-
-
-def setup():
-    dir = join(BASE_DIR, TODAY.strftime('%Y-%m'))
-    if not isdir(dir):
-        os.makedirs(dir)
-
-
-def log():
-    time = datetime.datetime.now()
-    today_path = join(str(BASE_DIR), TODAY.strftime('%Y-%m'), f'{TODAY}.md')
-    with open(today_path, 'a') as f:
-        f.write(f'{time.strftime(STRF_STRING)}\n')
-
-
-def usage(program: str):
-    print(f"{os.path.basename(program)}: <0|1|t YYYY-MM>")
     sys.exit(1)
 
 
-def read_file_seconds(filepath: str):
-    with open(filepath, 'r') as f:
-        content = f.read().split('\n')
+class Day():
+    date = None
+    times = None
+    status = None
 
-    times = [datetime.datetime.strptime(line, STRF_STRING) for line in content if line]
-    if not (len(times) % 2) == 0:
-        times.append(datetime.datetime.strptime(datetime.datetime.now().strftime(STRF_STRING), STRF_STRING))
+    def __init__(self, date: date):
+        self.date = date
+        self.path = join(BASE_DIR, self.date.strftime('%Y-%m'), f'{self.date.isoformat()}.md')
 
-    start_end = zip(times[0::2], times[1::2])
-    total = sum((end - start for (start, end) in start_end), datetime.timedelta())
-    return total.total_seconds()
+        self.status = POSSIBLE_STATUS['wd' if self.date.weekday() < 5 else 'we']
 
+        if isfile(self.path):
+            try:
+                datedict = json.load(open(self.path))
+                self.times = self._read_times(datedict)
+                self.status = datedict.get('status')
+            except:
+                pass
+        else:
+            self.times = []
 
-def is_weekday(date_str: str):
-    return datetime.datetime.fromisoformat(date_str).weekday() < 5
+    def _read_times(self, datedict):
+        times = datedict.get('times')
+        datetimes = [datetime.fromisoformat(f'{self.date}T{t}:00') for t in times]
+        return datetimes
 
+    def _log(self):
+        time = datetime.now()
+        self.times.append(time)
 
-def get_time(total_seconds: int):
-    compared = total_seconds
-    hours = int(float(compared) / 3600)
-    minutes = int(float(compared - hours * 3600) / 60)
-    return f'{hours}h {minutes}m'
+    def start_log(self):
+        if isfile(TMP_FILE):
+            err('already logging')
+        os.mknod(TMP_FILE)
+        self._log()
+        self.store()
 
+    def stop_log(self):
+        if not isfile(TMP_FILE):
+            err('not logging')
+        self._log()
+        os.remove(TMP_FILE)
+        self.store()
 
-def start_logging():
-    if isfile(TMP_FILE):
-        err('already logging')
-    os.mknod(TMP_FILE)
-    log()
+    def set_status(self, status):
+        self.status = POSSIBLE_STATUS[status]
+        self.store()
 
+    def elapsed_time(self):
+        tmp_times = self.times.copy()
+        if not (len(self.times) % 2) == 0:
+            tmp_times.append(datetime.strptime(datetime.now().strftime(STRF_STRING), STRF_STRING))
 
-def stop_logging():
-    if not isfile(TMP_FILE):
-        err('not logging')
-    log()
-    os.remove(TMP_FILE)
-
-
-def month_total(dir_path: str, store_total: bool = False):
-    if 'total' in os.listdir(dir_path):
-        with open(join(dir_path, 'total'), 'r') as f:
-            return int(float(f.read().strip()))
-
-    files = [f for f in os.listdir(dir_path) if isfile(join(dir_path, f))]
-    total_seconds = sum([read_file_seconds(join(dir_path, f)) for f in files]) - sum(28800 for f in files if is_weekday(f[:f.index('.')]))
-
-    if store_total:
-        with open(join(dir_path, 'total'), 'w') as f:
-            f.write(str(total_seconds))
-    return total_seconds
-
-
-def total(date_str: str = None):
-    if date_str:
-        dirs = [join(BASE_DIR, date_str)]
-        if not isdir(dirs[0]):
-            err(f'no logs for {date_str}')
-    else:
-        dirs = [d for d in os.listdir(BASE_DIR) if isdir(join(BASE_DIR, d))]
-
-    cur_month = TODAY.strftime('%Y-%m')
-    total_seconds = sum(month_total(join(BASE_DIR, d), d != cur_month) for d in dirs)
-
-    print(get_time(total_seconds))
+        return sum((end - start for (start, end) in zip(tmp_times[0::2], tmp_times[1::2])), timedelta())
 
 
-if __name__ == "__main__":
-    setup()
+    def total_seconds(self):
+        return self.elapsed_time().total_seconds()
 
+    def store(self, path=None):
+        used_path = path if path else self.path
+        used_dir = os.path.dirname(os.path.realpath(used_path))
+
+        if not isdir(used_dir):
+            os.makedirs(used_dir)
+        json.dump(self._dict(), open(used_path, 'w'))
+
+    def _dict(self):
+        return {'date': self.date.isoformat(),
+                'times': [dt.strftime(STRF_STRING) for dt in self.times],
+                'status': self.status}
+
+    def __str__(self):
+        return json.dumps(self._dict(), sort_keys=True)
+
+
+def matches_iso_date(string: str):
+    try:
+        return date.fromisoformat(string)
+    except:
+        return False
+
+
+def all_files():
+    file_paths = [join(root, f) for root, dirs, files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
+
+
+def total():
+    dates = [splitext(f)[0] for _,_,files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
+    days = [Day(date.fromisoformat(d)) for d in dates]
+    total_seconds = sum([d.elapsed_time() for d in days], timedelta()).total_seconds() - sum([timedelta(hours=8) for d in days if d.status == 'weekday'], timedelta()).total_seconds()
+    print(f'{int(total_seconds//3600):2d}h {int((total_seconds%3600)//60):02d}m')
+
+
+
+def _convert_file_to_day(path: str):
+    iso_date_string = splitext(basename(path))[0]
+    day = Day(date.fromisoformat(iso_date_string))
+
+    day.times = [datetime.fromisoformat(f'{iso_date_string}T{t}:00') for t in open(path).read().split() if t]
+
+    return day
+
+
+def convert(from_dir:str, to_dir: str):
+    BASE_DIR = from_dir
+    file_paths = [join(root, f) for root, dirs, files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
+
+    days = [_convert_file_to_day(p) for p in file_paths]
+
+    new_paths = [join(os.getcwd(), to_dir, join(*p.split('/')[-2:])) for p in file_paths]
+    for path, day in zip(new_paths, days):
+        day.store(path)
+
+
+if __name__ == '__main__':
     if len(sys.argv) < 2:
         total()
-    elif sys.argv[1] == "0":
-        stop_logging()
-    elif sys.argv[1] == "1":
-        start_logging()
-    elif sys.argv[1] == "t" and len(sys.argv) == 3:
-        total(sys.argv[2])
+    elif sys.argv[1] == '1':
+        Day(date.today()).start_log()
+    elif sys.argv[1] == '0':
+        Day(date.today()).stop_log()
+    elif sys.argv[1] == 't':
+        if len(sys.argv) < 3:
+            total()
+        else:
+            print('day total')
+            if not matches_iso_date(sys.argv[2]):
+                usage()
+            print(f'total of day {sys.argv[2]}')
+    elif sys.argv[1] == 's':
+        if len(sys.argv) < 3:
+            usage()
+        if sys.argv[2] == 's':
+            Day(date.today()).set_status('s')
+        elif sys.argv[2] == 'v':
+            Day(date.today()).set_status('v')
+        else:
+            usage()
+    elif sys.argv[1] == 'c':
+        if len(sys.argv) < 4 or exists(sys.argv[3]):
+            usage()
+        convert(sys.argv[2], sys.argv[3])
     else:
-        usage(sys.argv[0])
+        usage()
+
