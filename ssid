@@ -1,5 +1,0 @@
-#!/bin/bash
-
-which iw > /dev/null 2>&1 || echo "no iw"
-
-iw dev wlan0 link | grep SSID | cut -d: -f2 | xargs
