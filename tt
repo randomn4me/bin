@@ -13,6 +13,7 @@ BASE_DIR = join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker')
 STRF_STRING = '%H:%M'
 POSSIBLE_STATUS = {'s': 'sick',
                    'v': 'vacation',
+                   'csd': 'child-sick-day',
                    'wd': 'weekday',
                    'we': 'weekend'}
 
@@ -28,14 +29,12 @@ def err(msg: str):
 
 
 class Day():
-    date = None
-    times = None
+    times = []
     status = None
 
     def __init__(self, date: date):
         self.date = date
         self.path = join(BASE_DIR, self.date.strftime('%Y-%m'), f'{self.date.isoformat()}.md')
-
         self.status = POSSIBLE_STATUS['wd' if self.date.weekday() < 5 else 'we']
 
         if isfile(self.path):
@@ -45,8 +44,6 @@ class Day():
                 self.status = datedict.get('status')
             except:
                 pass
-        else:
-            self.times = []
 
     def _read_times(self, datedict):
         times = datedict.get('times')
@@ -54,8 +51,7 @@ class Day():
         return datetimes
 
     def _log(self):
-        time = datetime.now()
-        self.times.append(time)
+        self.times.append(datetime.now())
 
     def start_log(self):
         if isfile(TMP_FILE):
@@ -77,8 +73,8 @@ class Day():
 
     def elapsed_time(self):
         tmp_times = self.times.copy()
-        if not (len(self.times) % 2) == 0:
-            tmp_times.append(datetime.strptime(datetime.now().strftime(STRF_STRING), STRF_STRING))
+        if len(self.times) % 2 and self.date == date.today():
+            tmp_times.append(datetime.now())
 
         return sum((end - start for (start, end) in zip(tmp_times[0::2], tmp_times[1::2])), timedelta())
 
