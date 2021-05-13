@@ -11,8 +11,8 @@ from selenium.webdriver.firefox.options import Options, Log
 import youtube_dl
 
 URL = "https://www.ardmediathek.de/ard/sendung/sandmann/Y3JpZDovL3JiYi1vbmxpbmUuZGUvc2FuZG1hbm4/"
-ELEMENT_XPATH = './/div[@class="Root-sc-1bf56nn-0 iEEQOl"]'
-TIME_XPATH = './/div[@class="Line-epbftj-1 ibukAJ"]'
+ELEMENT_XPATH = './/div[@class="BaseContainer-epbftj-3 bbHqAX"]'
+TIME_XPATH = './/div[@class="Line-epbftj-1 dgMIUj"]'
 
 PATH = join(os.environ['HOME'], 'usr', 'vids', 'sandmann')
 
