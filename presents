@@ -39,5 +39,6 @@ case $1 in
 	s) show $2 ;;
 	a) add ;;
 	e) vim $FILE ;;
-	*) usage ;;
+	h) usage ;;
+	*) show ;;
 esac
