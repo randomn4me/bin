@@ -5,17 +5,19 @@ usage() {
 	exit 1
 }
 
+
 open() {
-	case "$1" in
+	lowercase="$(echo $1 | tr [A-Z] [a-z])"
+	case "$lowercase" in
 		*md|*c|*py|*txt)
 			vim "$1" ;;
-		*png|*PNG|*jpg|*jpeg|*JPG)
+		*png|*jpg|*jpeg|*heic)
 			meh "$1" ;;
-		*pdf|*PDF)
+		*pdf)
 			evince "$1" ;;
-		*mp4|*mkv|*mpv|*MTS|*mts|*MPG)
+		*mp4|*mkv|*mpv|*mts|*mpg)
 			mpv "$1" ;;
-		*docx|*xlsx|*pptx)
+		*docx|*xlsx|*pptx|*doc|*xls|*ppt)
 			libreoffice "$1" ;;
 		*)
 			echo "Fallback to xdg-open" > /dev/stderr
