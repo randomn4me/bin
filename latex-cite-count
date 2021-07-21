@@ -18,7 +18,9 @@ def main(files: list):
     for c in citations:
         cite_nums[c] += 1
 
-    print(sorted(cite_nums.items(), key=lambda kv: kv[1])[::-1])
+    citations_sorted = sorted(cite_nums.items(), key=lambda kv: kv[1])[::-1]
+    for (key, num) in citations_sorted:
+        print(key, num)
 
 
 if __name__ == '__main__':
