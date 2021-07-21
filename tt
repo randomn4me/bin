@@ -8,18 +8,27 @@ import sys
 from os.path import join, isdir, isfile, splitext, basename, exists, realpath, dirname
 
 
-TMP_FILE = join(os.getenv('HOME'), 'tmp', '.timetracker')
-BASE_DIR = join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker')
-STRF_STRING = '%H:%M'
-POSSIBLE_STATUS = {'s': 'sick',
-                   'v': 'vacation',
-                   'csd': 'child-sick-day',
-                   'wd': 'weekday',
-                   'we': 'weekend'}
+CONFIG_PATH = join(os.getenv('XDG_CONFIG_HOME'), 'tt') if os.getenv('XDG_CONFIG_HOME') else join(os.getenv('HOME'), '.config', 'tt')
+
+DEFAULT_CONFIG = {
+        'tmp_file': join(os.getenv('HOME'), 'tmp', '.timetracker'),
+        'base_dir': join(os.getenv('HOME'), 'var', 'nextcloud', 'misc', 'timetracker'),
+        'strf_string': '%H:%M',
+        'statuses': {
+            's': 'sick',
+            'v': 'vacation',
+            'csd': 'child-sick-day',
+            'wd': 'weekday',
+            'we': 'weekend'},
+        'worktime': {
+            'hours': 8,
+            'minutes': 0},
+        'delta_minutes': 0,
+    }
 
 
 def usage():
-    print(f'Usage: {basename(sys.argv[0])} <0|1|t|s <s|v>>')
+    print(f'Usage: {basename(sys.argv[0])} <0|1|e|t|s <s|v>>')
     sys.exit(1)
 
 
@@ -28,14 +37,20 @@ def err(msg: str):
     sys.exit(1)
 
 
+def read_config():
+    if not isfile(CONFIG_PATH): return {}
+    with open(CONFIG_PATH) as config_file:
+        return json.load(config_file)
+
+
 class Day():
     times = []
     status = None
 
     def __init__(self, date: date):
         self.date = date
-        self.path = join(BASE_DIR, self.date.strftime('%Y-%m'), f'{self.date.isoformat()}.md')
-        self.status = POSSIBLE_STATUS['wd' if self.date.weekday() < 5 else 'we']
+        self.path = join(config['base_dir'], self.date.strftime('%Y-%m'), f'{self.date.isoformat()}.md')
+        self.status = config['statuses']['wd' if self.date.weekday() < 5 else 'we']
 
         if isfile(self.path):
             try:
@@ -50,25 +65,27 @@ class Day():
         datetimes = [datetime.fromisoformat(f'{self.date}T{t}:00') for t in times]
         return datetimes
 
-    def _log(self):
-        self.times.append(datetime.now())
+    def _log(self, delta_minutes=0):
+        self.times.append(datetime.now() + timedelta(minutes=delta_minutes))
 
     def start_log(self):
-        if isfile(TMP_FILE):
+        if isfile(config['tmp_file']):
             err('already logging')
-        os.mknod(TMP_FILE)
-        self._log()
+        os.mknod(config['tmp_file'])
+        delta_minutes = int(config['delta_minutes'])
+        self._log(-delta_minutes)
         self.store()
 
     def stop_log(self):
-        if not isfile(TMP_FILE):
+        if not isfile(config['tmp_file']):
             err('not logging')
-        self._log()
-        os.remove(TMP_FILE)
+        delta_minutes = int(config['delta_minutes'])
+        self._log(delta_minutes)
+        os.remove(config['tmp_file'])
         self.store()
 
     def set_status(self, status):
-        self.status = POSSIBLE_STATUS[status]
+        self.status = config['statuses'][status]
         self.store()
 
     def elapsed_time(self):
@@ -77,7 +94,6 @@ class Day():
             tmp_times.append(datetime.now())
 
         return sum((end - start for (start, end) in zip(tmp_times[0::2], tmp_times[1::2])), timedelta())
-
 
     def total_seconds(self):
         return self.elapsed_time().total_seconds()
@@ -90,9 +106,14 @@ class Day():
             os.makedirs(used_dir)
         json.dump(self._dict(), open(used_path, 'w'))
 
+    def edit(self):
+        if not isfile(self.path):
+            err(f'No file for {self.date}')
+        os.system(f'vim {self.path}')
+
     def _dict(self):
         return {'date': self.date.isoformat(),
-                'times': [dt.strftime(STRF_STRING) for dt in self.times],
+                'times': [dt.strftime(config['strf_string']) for dt in self.times],
                 'status': self.status}
 
     def __str__(self):
@@ -106,53 +127,61 @@ def matches_iso_date(string: str):
         return False
 
 
-def all_files():
-    file_paths = [join(root, f) for root, dirs, files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
+def print_time(seconds: int):
+    print(f'{int(seconds//3600):2d}h {int((seconds%3600)//60):02d}m')
+
+
+
+def all_dates():
+    return [date.fromisoformat((splitext(f)[0])) for _,_,files in os.walk(config['base_dir']) for f in files if matches_iso_date(splitext(f)[0])]
 
 
 def total():
-    dates = [splitext(f)[0] for _,_,files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
-    days = [Day(date.fromisoformat(d)) for d in dates]
-    total_seconds = sum([d.elapsed_time() for d in days], timedelta()).total_seconds() - sum([timedelta(hours=8) for d in days if d.status == 'weekday'], timedelta()).total_seconds()
-    print(f'{int(total_seconds//3600):2d}h {int((total_seconds%3600)//60):02d}m')
+    days = [Day(d) for d in all_dates()]
+    worktime = timedelta(hours=config['worktime']['hours'], minutes=config['worktime']['minutes'])
+
+    total_seconds = sum([d.total_seconds() for d in days]) - sum([worktime for d in days if d.status == 'weekday'], timedelta()).total_seconds()
+
+    print_time(total_seconds)
 
 
-
-def _convert_file_to_day(path: str):
-    iso_date_string = splitext(basename(path))[0]
-    day = Day(date.fromisoformat(iso_date_string))
-
-    day.times = [datetime.fromisoformat(f'{iso_date_string}T{t}:00') for t in open(path).read().split() if t]
-
-    return day
+def day_total(date_string: str = str(date.today())):
+    try:
+        day_date = date.fromisoformat(date_string)
+    except:
+        err('No datestring given')
+    print_time(Day(day_date).total_seconds())
 
 
-def convert(from_dir:str, to_dir: str):
-    BASE_DIR = from_dir
-    file_paths = [join(root, f) for root, dirs, files in os.walk(BASE_DIR) for f in files if matches_iso_date(splitext(f)[0])]
-
-    days = [_convert_file_to_day(p) for p in file_paths]
-
-    new_paths = [join(os.getcwd(), to_dir, join(*p.split('/')[-2:])) for p in file_paths]
-    for path, day in zip(new_paths, days):
-        day.store(path)
+def week_total(week_number: int = date.today().isocalendar()[1]):
+    week_dates = [Day(d) for d in all_dates() if d.isocalendar()[1] == week_number]
+    total_seconds = sum([d.total_seconds() for d in week_dates])
+    print_time(total_seconds)
 
 
 if __name__ == '__main__':
+    config = {**DEFAULT_CONFIG, **read_config()}
+
     if len(sys.argv) < 2:
         total()
     elif sys.argv[1] == '1':
         Day(date.today()).start_log()
     elif sys.argv[1] == '0':
         Day(date.today()).stop_log()
+    elif sys.argv[1] == 'e':
+        Day(date.today()).edit()
     elif sys.argv[1] == 't':
+        total()
+    elif sys.argv[1] == 'd':
         if len(sys.argv) < 3:
-            total()
+            day_total()
         else:
-            print('day total')
-            if not matches_iso_date(sys.argv[2]):
-                usage()
-            print(f'total of day {sys.argv[2]}')
+            day_total(sys.argv[2])
+    elif sys.argv[1] == 'w':
+        if len(sys.argv) < 3:
+            week_total()
+        else:
+            week_total(int(sys.argv[2]))
     elif sys.argv[1] == 's':
         if len(sys.argv) < 3:
             usage()
@@ -162,10 +191,6 @@ if __name__ == '__main__':
             Day(date.today()).set_status('v')
         else:
             usage()
-    elif sys.argv[1] == 'c':
-        if len(sys.argv) < 4 or exists(sys.argv[3]):
-            usage()
-        convert(sys.argv[2], sys.argv[3])
     else:
         usage()
 
