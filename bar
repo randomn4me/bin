@@ -14,9 +14,13 @@ timetracking() {
 	test -f $HOME/tmp/.timetracker && echo + || echo -
 }
 
+vpnstatus() {
+	test $(vpn) = "up" && echo '+'
+}
+
 # left bar
 while :; do
-	printf "%s%3s  %3d%s %s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(timetracking)"
+	printf "%s%3s  %3d%s %s %2s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(timetracking)" "$(vpnstatus)"
 	sleep 1s
 done |\
 
@@ -28,4 +32,4 @@ while :; do
 	sleep 10s
 done |\
 
-mybar $((MONWIDTH - 150)) "bar" &
+mybar $((MONWIDTH - 200)) "bar" &
