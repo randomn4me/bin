@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta
 import json
 import os
 import sys
+import time
 
 from os.path import join, isdir, isfile, splitext, basename, exists, realpath, dirname
 
@@ -124,46 +125,35 @@ def matches_iso_date(string: str):
     try:
         return date.fromisoformat(string)
     except:
-        return False
+        err('No iso format given')
 
 
-def print_time(seconds: int):
-    print(f'{int(seconds//3600):2d}h {int((seconds%3600)//60):02d}m')
-
+def print_time(sec: int):
+    floating = sec/3600
+    print(f'{int(floating)}h {abs(int((floating-int(floating))*60)):02d}m')
 
 
 def all_dates():
     return [date.fromisoformat((splitext(f)[0])) for _,_,files in os.walk(config['base_dir']) for f in files if matches_iso_date(splitext(f)[0])]
 
 
+def seconds(days: list):
+    total_seconds = sum([d.total_seconds() for d in days])
+    return total_seconds
+
+
 def total():
-    days = [Day(d) for d in all_dates()]
+    days_in_range = [Day(d) for d in all_dates()[-90:]]
     worktime = timedelta(hours=config['worktime']['hours'], minutes=config['worktime']['minutes'])
-
-    total_seconds = sum([d.total_seconds() for d in days]) - sum([worktime for d in days if d.status == 'weekday'], timedelta()).total_seconds()
-
-    print_time(total_seconds)
-
-
-def day_total(date_string: str = str(date.today())):
-    try:
-        day_date = date.fromisoformat(date_string)
-    except:
-        err('No datestring given')
-    print_time(Day(day_date).total_seconds())
-
-
-def week_total(week_number: int = date.today().isocalendar()[1]):
-    week_dates = [Day(d) for d in all_dates() if d.isocalendar()[1] == week_number]
-    total_seconds = sum([d.total_seconds() for d in week_dates])
-    print_time(total_seconds)
+    total_seconds = seconds(days_in_range) - sum([worktime for d in days_in_range if d.status == 'weekday'], timedelta()).total_seconds()
+    return total_seconds
 
 
 if __name__ == '__main__':
     config = {**DEFAULT_CONFIG, **read_config()}
 
     if len(sys.argv) < 2:
-        total()
+        print_time(total())
     elif sys.argv[1] == '1':
         Day(date.today()).start_log()
     elif sys.argv[1] == '0':
@@ -174,14 +164,14 @@ if __name__ == '__main__':
         total()
     elif sys.argv[1] == 'd':
         if len(sys.argv) < 3:
-            day_total()
+            print_time(seconds([Day(date.today())]))
         else:
-            day_total(sys.argv[2])
+            print_time(seconds([Day(matches_iso_date(sys.argv[2]))]))
     elif sys.argv[1] == 'w':
         if len(sys.argv) < 3:
-            week_total()
+            print_time(seconds([Day(d) for d in all_dates() if d.isocalendar()[1] == date.today().isocalendar()[1]]))
         else:
-            week_total(int(sys.argv[2]))
+            print_time(seconds([Day(d) for d in all_dates() if d.isocalendar()[1] == int(sys.argv[2])]))
     elif sys.argv[1] == 's':
         if len(sys.argv) < 3:
             usage()
