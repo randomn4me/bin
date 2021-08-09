@@ -27,6 +27,21 @@ DEFAULT_CONFIG = {
         'delta_minutes': 0,
     }
 
+quarters = {
+        1: [1,2,3],
+        2: [1,2,3],
+        3: [1,2,3],
+        4: [4,5,6],
+        5: [4,5,6],
+        6: [4,5,6],
+        7: [7,8,9],
+        8: [7,8,9],
+        9: [7,8,9],
+       10: [10,11,12],
+       11: [10,11,12],
+       12: [10,11,12]
+    }
+
 
 def usage():
     print(f'Usage: {basename(sys.argv[0])} <0|1|e|t|s <s|v>>')
@@ -73,15 +88,13 @@ class Day():
         if isfile(config['tmp_file']):
             err('already logging')
         os.mknod(config['tmp_file'])
-        delta_minutes = int(config['delta_minutes'])
-        self._log(-delta_minutes)
+        self._log(-int(config['delta_minutes']))
         self.store()
 
     def stop_log(self):
         if not isfile(config['tmp_file']):
             err('not logging')
-        delta_minutes = int(config['delta_minutes'])
-        self._log(delta_minutes)
+        self._log(int(config['delta_minutes']))
         os.remove(config['tmp_file'])
         self.store()
 
@@ -93,15 +106,13 @@ class Day():
         tmp_times = self.times.copy()
         if len(self.times) % 2 and self.date == date.today():
             tmp_times.append(datetime.now())
-
         return sum((end - start for (start, end) in zip(tmp_times[0::2], tmp_times[1::2])), timedelta())
 
     def total_seconds(self):
         return self.elapsed_time().total_seconds()
 
-    def store(self, path=None):
-        used_path = path if path else self.path
-        used_dir = os.path.dirname(os.path.realpath(used_path))
+    def store(self):
+        used_dir = os.path.dirname(os.path.realpath(self.path))
 
         if not isdir(used_dir):
             os.makedirs(used_dir)
@@ -110,7 +121,7 @@ class Day():
     def edit(self):
         if not isfile(self.path):
             err(f'No file for {self.date}')
-        os.system(f'vim {self.path}')
+        os.system(f'{os.getenv("EDITOR")} {self.path}')
 
     def _dict(self):
         return {'date': self.date.isoformat(),
@@ -129,8 +140,10 @@ def matches_iso_date(string: str):
 
 
 def print_time(sec: int):
-    floating = sec/3600
-    print(f'{int(floating)}h {abs(int((floating-int(floating))*60)):02d}m')
+    sign = '-' if sec < 0 else ''
+    hours = int(sec/3600)
+    minutes = int((sec - hours*3600) / 60)
+    print(f'{sign}{abs(hours)}h {abs(minutes):02d}m')
 
 
 def all_dates():
@@ -142,10 +155,9 @@ def seconds(days: list):
     return total_seconds
 
 
-def total():
-    days_in_range = [Day(d) for d in all_dates()[-90:]]
+def total(timerange: list):
     worktime = timedelta(hours=config['worktime']['hours'], minutes=config['worktime']['minutes'])
-    total_seconds = seconds(days_in_range) - sum([worktime for d in days_in_range if d.status == 'weekday'], timedelta()).total_seconds()
+    total_seconds = seconds(timerange) - sum([worktime for d in timerange if d.status == 'weekday'], timedelta()).total_seconds()
     return total_seconds
 
 
@@ -153,7 +165,7 @@ if __name__ == '__main__':
     config = {**DEFAULT_CONFIG, **read_config()}
 
     if len(sys.argv) < 2:
-        print_time(total())
+        print_time(total([Day(d) for d in all_dates() if d.isocalendar()[1] == date.today().isocalendar()[1]]))
     elif sys.argv[1] == '1':
         Day(date.today()).start_log()
     elif sys.argv[1] == '0':
@@ -161,7 +173,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'e':
         Day(date.today()).edit()
     elif sys.argv[1] == 't':
-        total()
+        print_time(total([Day(d) for d in all_dates() if d.month in quarters[d.month]]))
     elif sys.argv[1] == 'd':
         if len(sys.argv) < 3:
             print_time(seconds([Day(date.today())]))
