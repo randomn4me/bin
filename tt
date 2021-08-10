@@ -111,12 +111,12 @@ class Day():
     def total_seconds(self):
         return self.elapsed_time().total_seconds()
 
-    def store(self):
+    def store(self, path=None):
         used_dir = os.path.dirname(os.path.realpath(self.path))
 
         if not isdir(used_dir):
             os.makedirs(used_dir)
-        json.dump(self._dict(), open(used_path, 'w'))
+        json.dump(self._dict(), open(self.path, 'w'))
 
     def edit(self):
         if not isfile(self.path):
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'e':
         Day(date.today()).edit()
     elif sys.argv[1] == 't':
-        print_time(total([Day(d) for d in all_dates() if d.month in quarters[d.month]]))
+        print_time(total([Day(d) for d in all_dates() if d.month in quarters[date.today().month] and d.year == date.today().year]))
     elif sys.argv[1] == 'd':
         if len(sys.argv) < 3:
             print_time(seconds([Day(date.today())]))
@@ -181,7 +181,7 @@ if __name__ == '__main__':
             print_time(seconds([Day(matches_iso_date(sys.argv[2]))]))
     elif sys.argv[1] == 'w':
         if len(sys.argv) < 3:
-            print_time(seconds([Day(d) for d in all_dates() if d.isocalendar()[1] == date.today().isocalendar()[1]]))
+            print_time(seconds([Day(d) for d in all_dates() if (d.isocalendar()[1], d.year) == (date.today().isocalendar()[1], date.today().year)]))
         else:
             print_time(seconds([Day(d) for d in all_dates() if d.isocalendar()[1] == int(sys.argv[2])]))
     elif sys.argv[1] == 's':
