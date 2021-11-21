@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-from datetime import datetime, date, timedelta
 import json
 import os
 import sys
 import time
 
+from datetime import datetime, date, timedelta
 from os.path import join, isdir, isfile, splitext, basename, exists, realpath, dirname
 
 
@@ -44,7 +44,7 @@ quarters = {
 
 
 def usage():
-    print(f'Usage: {basename(sys.argv[0])} <0|1|e|t|s <s|v>>')
+    print(f'Usage: {basename(sys.argv[0])} <0|1|e|t|s <s|v>|d [iso-date]|w [weeknum year]>|n <note>')
     sys.exit(1)
 
 
@@ -73,6 +73,7 @@ class Day():
                 datedict = json.load(open(self.path))
                 self.times = self._read_times(datedict)
                 self.status = datedict.get('status')
+                self.note = datedict.get('note')
             except:
                 pass
 
@@ -102,6 +103,10 @@ class Day():
         self.status = config['statuses'][status]
         self.store()
 
+    def set_note(self, note: str):
+        self.note = note
+        self.store()
+
     def elapsed_time(self):
         tmp_times = self.times.copy()
         if len(self.times) % 2 and self.date == date.today():
@@ -116,6 +121,7 @@ class Day():
 
         if not isdir(used_dir):
             os.makedirs(used_dir)
+        print(self._dict())
         json.dump(self._dict(), open(self.path, 'w'))
 
     def edit(self):
@@ -126,7 +132,8 @@ class Day():
     def _dict(self):
         return {'date': self.date.isoformat(),
                 'times': [dt.strftime(config['strf_string']) for dt in self.times],
-                'status': self.status}
+                'status': self.status,
+                'note': self.note}
 
     def __str__(self):
         return json.dumps(self._dict(), sort_keys=True)
@@ -165,34 +172,29 @@ if __name__ == '__main__':
     config = {**DEFAULT_CONFIG, **read_config()}
 
     if len(sys.argv) < 2:
-        print_time(total([Day(d) for d in all_dates() if d.isocalendar()[1] == date.today().isocalendar()[1]]))
-    elif sys.argv[1] == '1':
-        Day(date.today()).start_log()
+        print_time(total([Day(d) for d in all_dates() if d.month in quarters[date.today().month] and d.year == date.today().year]))
     elif sys.argv[1] == '0':
         Day(date.today()).stop_log()
+    elif sys.argv[1] == '1':
+        Day(date.today()).start_log()
     elif sys.argv[1] == 'e':
         Day(date.today()).edit()
     elif sys.argv[1] == 't':
         print_time(total([Day(d) for d in all_dates() if d.month in quarters[date.today().month] and d.year == date.today().year]))
-    elif sys.argv[1] == 'd':
-        if len(sys.argv) < 3:
-            print_time(seconds([Day(date.today())]))
-        else:
-            print_time(seconds([Day(matches_iso_date(sys.argv[2]))]))
-    elif sys.argv[1] == 'w':
-        if len(sys.argv) < 3:
-            print_time(seconds([Day(d) for d in all_dates() if (d.isocalendar()[1], d.year) == (date.today().isocalendar()[1], date.today().year)]))
-        else:
-            print_time(seconds([Day(d) for d in all_dates() if d.isocalendar()[1] == int(sys.argv[2])]))
     elif sys.argv[1] == 's':
-        if len(sys.argv) < 3:
+        if len(sys.argv) < 3 or sys.argv[2] not in ['s', 'v']:
             usage()
-        if sys.argv[2] == 's':
-            Day(date.today()).set_status('s')
-        elif sys.argv[2] == 'v':
-            Day(date.today()).set_status('v')
-        else:
+        Day(date.today()).set_status(sys.argv[2])
+    elif sys.argv[1] == 'd':
+        arg = seconds([Day(date.today())]) if len(sys.argv) < 3 else seconds([Day(matches_iso_date(sys.argv[2]))])
+        print_time(arg)
+    elif sys.argv[1] == 'w':
+        arg = (date.today().isocalendar()[1], date.today().year) if len(sys.argv) < 3 else (int(sys.argv[2]), int(sys.argv[3]))
+        print_time(seconds([Day(d) for d in all_dates() if (d.isocalendar()[1], d.year) == arg]))
+    elif sys.argv[1] == 'n':
+        if not len(sys.argv) > 2:
             usage()
+        Day(date.today()).set_note(' '.join(sys.argv[2:]))
     else:
         usage()
 
