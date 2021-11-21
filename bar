@@ -2,34 +2,29 @@
 
 MONWIDTH=$(wattr w `lsw -r`)
 
-newmails() {
-	ls $MAIL/new | wc -l
+curtime() {
+	timedelta=3
+	python -c "import datetime; date = datetime.datetime.now() + datetime.timedelta(minutes=$timedelta); print(date.strftime('%d.%m  %H:%M'))"
 }
 
 batstat() {
-	test $(bat -s) = "Charging" && echo '+' || echo ' '
-}
-
-timetracking() {
-	test -f $HOME/tmp/.timetracker && echo + || echo -
+	test $(bat -s) = "Charging" && echo + || echo ' '
 }
 
 vpnstatus() {
-	test $(vpn) = "up" && echo '+'
+	test $(vpn) = "up" && echo +
 }
 
 # left bar
 while :; do
-	printf "%s%3s  %3d%s %s %2s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(timetracking)" "$(vpnstatus)"
+	printf "%s%3s  %3d%s %s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(vpnstatus)"
 	sleep 1s
 done |\
-
 mybar 0 "bar" &
 
 # right bar
 while :; do
-	printf "%s`python -c "import datetime; date = datetime.datetime.now() + datetime.timedelta(minutes=3); print(date.strftime('%d.%m  %H:%M'))"`\n" "%{c}"
-	sleep 10s
+	printf "%s%s\n" "%{c}" "$(curtime)"
+	sleep 5s
 done |\
-
-mybar $((MONWIDTH - 200)) "bar" &
+mybar $((MONWIDTH - 150)) "bar" &
