@@ -1,0 +1,31 @@
+#!/bin/sh
+
+DIR=unzipped-paper
+MAIN=paper
+MAKEFILE_TEMPLATE=$HOME/src/makefiles/latex
+
+test ! -f $MAKEFILE_TEMPLATE && echo 'No latex template found' && exit 1
+
+usage() {
+	echo "Usage: $(basename $0) [-m main-document] <zip-file>"
+}
+
+
+while getopts "m:" opt; do
+    case $opt in
+        m) MAIN=$OPTARG ;;
+        *) usage && exit 1 ;;
+    esac
+done
+
+echo DIR $DIR
+echo MAIN $MAIN
+
+test ! -f $1 && usage && exit 1
+
+unzip -d $DIR $1
+cd $DIR
+
+cp $MAKEFILE_TEMPLATE Makefile
+sed -i "s/filename/$MAIN/" Makefile
+
