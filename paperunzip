@@ -1,31 +1,30 @@
 #!/bin/sh
 
-DIR=unzipped-paper
-MAIN=paper
+DIR=unzipped
+NAME=paper
 MAKEFILE_TEMPLATE=$HOME/src/makefiles/latex
 
 test ! -f $MAKEFILE_TEMPLATE && echo 'No latex template found' && exit 1
 
 usage() {
-	echo "Usage: $(basename $0) [-m main-document] <zip-file>"
+	echo "Usage: $(basename $0) [-n document-name] <zip-file>"
+	exit 1
 }
 
 
-while getopts "m:" opt; do
+while getopts "n:" opt; do
     case $opt in
-        m) MAIN=$OPTARG ;;
-        *) usage && exit 1 ;;
+        n) NAME=$OPTARG ;;
     esac
 done
 
-echo DIR $DIR
-echo MAIN $MAIN
+shift $((OPTIND - 1))
 
-test ! -f $1 && usage && exit 1
+test ! -f "$1" && usage
 
-unzip -d $DIR $1
+unzip -d $DIR "$1"
 cd $DIR
 
 cp $MAKEFILE_TEMPLATE Makefile
-sed -i "s/filename/$MAIN/" Makefile
+sed -i "s/filename/$NAME/" Makefile
 

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+TMPDIR="$(mktemp -d)"
 DIR="$HOME/usr/vids/screencasts"
 DATE=`date '+%F_%H-%M'`
 
@@ -8,11 +9,14 @@ MW=$(wattr w $RM)
 MH=$(wattr h $RM)
 
 ffmpeg -f x11grab \
-    -r 30 \
+    -r 25 \
     -s ${MW}x${MH} \
     -loglevel quiet \
     -i :0.0 \
     -vcodec libx264 \
     -preset ultrafast \
     -threads 0 \
-    -y "$DIR/$DATE.mkv"
+    -y "$TMPDIR/$DATE.mkv"
+
+ffmpeg -i "$TMPDIR/$DATE.mkv" -c copy "$DIR/$DATE.mp4"
+rm -rf $TMPDIR

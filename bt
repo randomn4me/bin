@@ -4,17 +4,13 @@ usage() {
 	echo "Usage: $(basename $0) [-h] <0|d|1|h|r|s>"
 }
 
-cmd() {
-	bluetoothctl $@
-}
-
 case $1 in
-	0|d) cmd disconnect ;;
-	1|h) cmd connect 2C:41:A1:09:48:75 ;;
-	r)   cmd connect 04:52:C7:FB:3A:3F ;;
-	s)   STATUS=$(cmd info > /dev/null 2>&1 && echo 1 || echo 0)
+	0|d) bluetoothctl disconnect ;;
+	1|h) bluetoothctl connect 2C:41:A1:09:48:75 ;;
+	r)   bluetoothctl connect 04:52:C7:FB:3A:3F ;;
+	h)   usage ;;
+	*)   STATUS=$(bluetoothctl info > /dev/null 2>&1 && echo 1 || echo 0)
 	     if [[ $STATUS = 1 ]]; then
-	         cmd info | grep Name | cut -d':' -f2 | xargs
+	         bluetoothctl info | grep Name | cut -d':' -f2 | xargs
 	     fi ;;
-	*)   usage ;;
 esac
