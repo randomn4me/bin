@@ -1,3 +1,13 @@
-#!/bin/sh
+#!/usr/bin/python3
 
-mpv 'https://www.tagesschau.de/sendung/tagesschau/index.html' > /dev/null 2>&1 &
+import requests
+import subprocess
+import re
+
+URL = 'https://www.tagesschau.de/sendung/tagesschau/'
+PATTERN = r'https://download.media.tagesschau.de/video/[a-zA-Z0-9\/\.-]+'
+
+r = requests.get(URL)
+links = sorted(set(re.findall(PATTERN, r.text)))
+
+subprocess.Popen(['mpv', links[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
