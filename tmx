@@ -1,13 +1,15 @@
 #!/bin/sh
 
 usage() {
-	echo "Usage: $(basename $0) <c>"
+	echo "Usage: $(basename $0) <c|m|d>"
 }
 
 case "$1" in
 	c*) SESSION_NAME="coding" ;;
 	m*) SESSION_NAME="music" ;;
-	 *) usage ;;
+	d*) SESSION_NAME="diss" ;;
+  w*) SESSION_NAME="web" ;;
+	*) usage ;;
 esac
 
 if ! tmux has-session -t $SESSION_NAME 2> /dev/null ; then
@@ -18,8 +20,15 @@ if ! tmux has-session -t $SESSION_NAME 2> /dev/null ; then
 			tmux select-pane -U -t $SESSION_NAME
 			;;
 		music)
-			tmux new-session -d -n 'm' -s $SESSION_NAME 'ncmpcpp'
+			tmux new-session -d -n 'm' -s $SESSION_NAME 'ncspot'
 			;;
+		diss)
+			cd ~/src/latex/diss
+			tmux new-session -d -n 'm' -s $SESSION_NAME
+			;;
+    web)
+			tmux new-session -d -n "w" -s $SESSION_NAME 'w3m news.ycombinator.com'
+      ;;
 	esac
 fi
 

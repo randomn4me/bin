@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ~/.config/themes/current
+
 usage() {
 	cat << EOF
 Usage: $(basename $0) <offset x> <name>
@@ -9,4 +11,4 @@ EOF
 test $# -ne 2 && usage && exit 1
 
 geometry="${WIDTH:-150}x20+${1}"
-lemonbar -d -g "$geometry" -f "misc ohsnap:size=7" -B "#000000" -F "#c2c2b0" -n "$2"
+lemonbar -d -g "$geometry" -f "misc ohsnap:size=7" -B "$COLOR_BASE" -F "$COLOR_GOLD" -n "$2"

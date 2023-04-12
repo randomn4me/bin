@@ -1,13 +1,11 @@
 #!/bin/bash
 
-resolution="$(xrandr --nograb --current | awk '/\*/ {printf $1; exit}')"
-monitor_width="${resolution/x*}"
+source ~/.config/themes/current
 
-tmpwidth="$(( (monitor_width / 4)))"
 height="20"
 font="misc ohsnap:size=7"
 gaps="10"
 
 options="$@"
 
-dmenu $options -i -name "menu" -class "dmenu" -h "$height" -fn "$font" -nb "#000000" -nf "#c2c2b0" -sb "#c2c2b0" -sf "#000000" 2>&1
+dmenu $options -i -name "menu" -class "dmenu" -h "$height" -fn "$font" -nb "$COLOR_BASE" -nf "$COLOR_GOLD" -sb "$COLOR_GOLD" -sf "$COLOR_BASE" 2>&1

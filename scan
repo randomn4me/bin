@@ -14,8 +14,9 @@ test "$1" = "-h" && usage
 
 mkdir -p $outdir
 name_sanitized="$(echo $@ | tr [A-Z\ ] [a-z\-])"
+outfile="$outdir/$(date +%F_%Hh%Mm%Ss).pdf"
 
 ( scanimage -d "$device" -o "$tmpscan.png" && \
-	convert "$tmpscan.png" "$outdir/$(date +%F_%Hh%Mm%Ss).pdf" && \
-	rm -rf $tmpdir ) > /dev/null 2>&1 & disown
+	convert "$tmpscan.png" "$outfile" && \
+	rm -rf $tmpdir ) > /dev/null & disown
 

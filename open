@@ -9,19 +9,19 @@ usage() {
 open() {
 	lowercase="$(echo $1 | tr [A-Z] [a-z])"
 	case "$lowercase" in
+		*html|*htm)
+			firefox "$1" ;;
 		*md|*c|*py|*txt)
 			vim "$1" ;;
 		*png|*jpg|*jpeg|*heic)
 			meh "$1" ;;
 		*pdf)
-			evince "$1" ;;
+			zathura "$1" ;;
 		*mp4|*mkv|*mpv|*mts|*mpg)
 			mpv "$1" ;;
-		*docx|*xlsx|*pptx|*doc|*xls|*ppt)
+		*doc|*xls|*ppt|*docx|*xlsx|*pptx)
 			libreoffice "$1" ;;
-		*)
-			echo "Fallback to xdg-open" > /dev/stderr
-			xdg-open "$1" > /dev/null
+		*) xdg-open "$1" ;;
 	esac
 }
 

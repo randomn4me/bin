@@ -6,8 +6,8 @@ usage() {
 }
 
 lockon() {
-	xss-lock -- lock &
-	xautolock -corners '000-' -locker lock -time 5 -notify 30 -notifier 'notify "sleeping soon"' &
+	xss-lock -- slock &
+	xautolock -corners '000-' -locker slock -time 5 -notify 30 -notifier 'notify "sleeping soon"' &
 	notify 'screensaver on'
 }
 

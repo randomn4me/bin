@@ -1,0 +1,6 @@
+#!/bin/sh
+# Inspired by https://codeberg.org/mintezpresso/rbwmenu/src/branch/main/rbwmenu
+
+entry=$(rbw list | menu)
+rbw get "$entry" | xsel -b
+notify "Password copied for '$entry'"

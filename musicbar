@@ -1,10 +1,11 @@
 #!/bin/bash
 
-MONWIDTH=$(wattr w `lsw -r`)
+test `xrandr | grep ' connected' | wc -l` -ge 2 && MONWIDTH=2560 || MONWIDTH=1080
+
 export WIDTH=650
 OFFSET=$(((MONWIDTH-WIDTH)/2))
 
 while :; do
-	echo "%{c}$(mpc current)"
+	echo "%{c}$(playerctl --player=ncspot,mpd metadata -f '{{artist}} - {{title}}' 2> /dev/null || mpc current 2> /dev/null)"
 	sleep 1
 done | mybar $OFFSET "musicbar" &

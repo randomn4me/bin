@@ -1,0 +1,5 @@
+#!/bin/sh
+
+for w in `lsw`; do
+    wmv -a 300 300 $w
+done

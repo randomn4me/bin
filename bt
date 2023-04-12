@@ -1,16 +1,26 @@
 #!/bin/sh
 
-usage() {
-	echo "Usage: $(basename $0) [-h] <0|d|1|h|r|s>"
+unknown() {
+	echo "Unknown device. Only [b]ose, [f]airphone, [r]evolve allowed."
+	exit 1
 }
 
+usage() {
+	echo "Usage: $(basename $0) [h] <b|f|r> <c|d>"
+	exit 1
+}
+
+test $# -ne 2 && usage && exit 1
+
 case $1 in
-	0|d) bluetoothctl disconnect ;;
-	1|h) bluetoothctl connect 2C:41:A1:09:48:75 ;;
-	r)   bluetoothctl connect 04:52:C7:FB:3A:3F ;;
-	h)   usage ;;
-	*)   STATUS=$(bluetoothctl info > /dev/null 2>&1 && echo 1 || echo 0)
-	     if [[ $STATUS = 1 ]]; then
-	         bluetoothctl info | grep Name | cut -d':' -f2 | xargs
-	     fi ;;
+	h) usage ;;
+	b) DEVICEID=2C:41:A1:09:48:75 ;;
+	f) DEVICEID=00:00:AB:BD:B2:6B ;;
+	r) DEVICEID=04:52:C7:FB:3A:3F ;;
+	*) unknown ;;
+esac
+
+case $2 in
+	c|1) bluetoothctl connect $DEVICEID ;;
+	d|0) bluetoothctl disconnect $DEVICEID ;;
 esac

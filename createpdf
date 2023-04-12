@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test $# -le 2 && echo "Usage: $(basename $0) output files..." && exit
+test $# -lt 2 && echo "Usage: $(basename $0) <output> [files..]" && exit
 test -e $1 && echo "Destination exists" && exit
 
 OUTPUT=$1

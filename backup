@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export BORG_REPO=/mnt/backup/borg-backup
-export BORG_PASSCOMMAND='cat /home/phil/usr/misc/borg'
+export BORG_PASSCOMMAND='rbw get borg-passphrase'
 
 usage() {
 	cat <<EOF > /dev/stderr
@@ -37,11 +37,13 @@ backup() {
 		--exclude *~				\
 		--exclude *.pyc				\
 		--exclude /home/phil/var/log\
+		--exclude /home/phil/tmp	\
+		--exclude /home/phil/src/aur/chroot\
+		--exclude /home/phil/var/steam\
+    --exclude-if-present '.nobackup' \
 		\
 		::'{hostname}-{now}'		\
-		/home/phil/src				\
-		/home/phil/usr				\
-		/home/phil/var				\
+		/home/phil					\
 
 		backup_exit=$?
 
@@ -52,14 +54,15 @@ backup() {
 	# limit prune's operation to this machine's archives and not apply to
 	# other machines' archives also:
 
-	borg prune						\
-		--list						\
-		--prefix '{hostname}-'		\
-		--show-rc					\
-		--keep-daily	7			\
-		--keep-weekly   4			\
-		--keep-monthly  12			\
-		--keep-yearly   6			\
+	borg prune						    \
+		--list						    \
+		--glob-archives '{hostname}-'	\
+		--show-rc					    \
+		--keep-hourly	6			    \
+		--keep-daily	7			    \
+		--keep-weekly   4			    \
+		--keep-monthly  12			    \
+		--keep-yearly   6			    \
 
 	prune_exit=$?
 
@@ -76,7 +79,6 @@ backup() {
 		info "Backup and/or Prune finished with an error"
 	fi
 
-	exit ${global_exit}
 }
 
 main() {

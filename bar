@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MONWIDTH=$(wattr w `lsw -r`)
+test `xrandr | grep ' connected' | wc -l` -ge 2 && MONWIDTH=2560 || MONWIDTH=1080
 
 curtime() {
 	timedelta=3
@@ -8,16 +8,24 @@ curtime() {
 }
 
 batstat() {
-	test $(bat -s) = "Charging" && echo + || echo ' '
+	test "$(bat -s)" = "Charging" && echo + || echo ' '
 }
 
 vpnstatus() {
 	test $(vpn) = "up" && echo +
 }
 
+newmails() {
+	mailfolder=~/var/mail
+  audacis=$(ls ~/var/mail/audacis/Inbox/new | wc -l)
+  personalvorstand=$(ls ~/var/mail/personalvorstand/Inbox/new | wc -l)
+  peasec=$(ls ~/var/mail/peasec/Inbox/new | wc -l)
+  test $(($audacis + $personalvorstand + $peasec)) -gt 0 && echo 'N' || echo '-'
+}
+
 # left bar
 while :; do
-	printf "%s%3s  %3d%s %s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(vpnstatus)"
+    printf "%s%3s  %3d%s %1s  %s\n" "%{c}" "$(vol)" "$(bat)" "$(batstat)" "$(newmails)" "$(vpnstatus)"
 	sleep 1s
 done |\
 mybar 0 "bar" &
