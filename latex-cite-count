@@ -1,33 +1,54 @@
 #!/usr/bin/python
 # author: pkuehn
 
-import sys
+import argparse
+import collections
 import os
 import re
+import sys
 
 
-def usage(program_name:str):
-    print(f'Usage: {os.path.basename(program_name)} <aux-file> [<aux-file> [..]]')
-    sys.exit(1)
+def count_aux(files: list):
+    citekeys = [citekey
+                for file in files
+                for line in open(file).read().split('\n') if 'citation' in line
+                for citekey in re.findall(r'\{([\w,-]+)\}', line)[0].split(',')]
+    return citekeys
 
 
-def main(files: list):
-    citations = [c for f in files for cite in re.findall(r'\\citation{([\w\./:,]*)}', open(f).read()) for c in cite.split(',')]
-    cite_nums = {c:0 for c in citations}
-
-    for c in citations:
-        cite_nums[c] += 1
-
-    citations_sorted = sorted(cite_nums.items(), key=lambda kv: kv[1])[::-1]
-    for (key, num) in citations_sorted:
-        print(key, num)
+def count_bcf(file: str):
+    try:
+        keys = [key[0]
+                for line in open(file).read().split('\n') if 'citekey' in line
+                if (key := re.findall(r'>([\w-]+)<', line))]
+        return keys
+    except Exception as e:
+        print(e.with_traceback())
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        usage(sys.argv[0])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--bcf', help='read bcf file')
+    parser.add_argument('--aux', nargs='+', help='read aux file(s)')
 
-    if any(not os.path.isfile(f) for f in sys.argv[1:]):
-        usage(sys.argv[0])
+    args = parser.parse_args()
 
-    main(sys.argv[1:])
+    if args.aux:
+        if any(not os.path.isfile(f) for f in args.aux):
+            parser.print_help()
+            sys.exit()
+        citation_keys = count_aux(args.aux)
+
+    elif args.bcf:
+        if not os.path.isfile(args.bcf):
+            parser.print_help()
+            sys.exit()
+        citation_keys = count_bcf(args.bcf)
+
+    else:
+        parser.print_help()
+        sys.exit()
+
+    counter = collections.Counter(citation_keys)
+    for key, value in counter.items():
+        print(f'{key},{value}')
