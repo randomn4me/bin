@@ -1,7 +1,6 @@
 #!/bin/sh
 
-DIR=unzipped
-NAME=paper
+NAME=main
 MAKEFILE_TEMPLATE=$HOME/src/makefiles/latex
 
 test ! -f $MAKEFILE_TEMPLATE && echo 'No latex template found' && exit 1
@@ -22,8 +21,10 @@ shift $((OPTIND - 1))
 
 test ! -f "$1" && usage
 
-unzip -d $DIR "$1"
-cd $DIR
+dir="${1%.*}"
+
+unzip -d "$dir" "$1"
+cd "$dir"
 
 cp $MAKEFILE_TEMPLATE Makefile
 sed -i "s/filename/$NAME/" Makefile

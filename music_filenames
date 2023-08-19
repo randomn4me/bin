@@ -1,42 +1,59 @@
 #!/usr/bin/python3
 
+import argparse
+import eyed3
 import os
 
-FILENAME='content'
+parser = argparse.ArgumentParser()
+parser.add_argument('--execute', action='store_true',
+        help='Execute everything,_otherwise it\'s a dry-run.')
+parser.add_argument('-t', '--tags', action='store_true', help='Set EXIF tags')
+parser.add_argument('file', type=str, help='The help msg')
+
+args = parser.parse_args()
+
+def ask(question: str):
+    answer = input(f'{question}? ')
+    yesno = input(f'\'{answer}\' correct? [Y/n] ')
+    if yesno == 'N' or yesno == 'n':
+        print('Abort ..')
+        exit()
+    return answer
 
 try:
-    with open(FILENAME, 'r') as f:
-        file_content = f.readlines()
-except:
-    print(f'[!] Error : No file named {FILENAME}')
+    file_content = open(args.file).read().strip().split('\n')
+except OSError:
+    print(f'[!] Error : No file named {args.file}')
     exit()
 
-cd_content = dict()
-for line in file_content:
-    splitted = line.split()
-    num = splitted[0][:-1]
-    title = ' '.join(splitted[1:]).strip()
-    cd_content[num] = title
+dir_content = [(i+1, title) for i, title in enumerate(file_content)]
 
-for key in cd_content:
-    print(key, cd_content[key])
+for index, title in dir_content:
+    print(index, title)
 
 yesno = input('Correct? [Y/n] ')
 if yesno == 'N' or yesno == 'n':
     print('Abort ..')
     exit()
 
-artist = input('Artist? ')
-yesno = input(f'\'{artist}\' correct? [Y/n] ')
-if yesno == 'N' or yesno == 'n':
-    print('Abort ..')
-    exit()
+artist = ask('Artist')
+album = ask('Album')
 
-dir_content = os.listdir()
-for key in cd_content:
-    f = next(item for item in dir_content if item.startswith('{:02}'.format(int(key))))
-    if f:
-        os.rename(f, f'{"{:02}".format(int(key))} {artist} - {cd_content[key]}.mp3')
+dir_files = [f for f in os.listdir() if not f == args.file]
+for index, (current_file, (index, title)) in \
+        enumerate(zip(sorted(dir_files), dir_content)):
+    extension = os.path.splitext(current_file)[1]
+    new_name = f'{index:02} {artist} - {title}{extension}'
 
-print('done ..')
+    if args.execute:
+        os.rename(current_file, new_name)
+
+        audiofile = eyed3.load(new_name)
+        audiofile.tag.artist = artist
+        audiofile.tag.album = album
+        audiofile.tag.title = title
+        audiofile.tag.track_num = index
+        audiofile.tag.save()
+    else:
+        print(f'{current_file}\t->\t{new_name}')
 

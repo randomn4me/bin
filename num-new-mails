@@ -1,0 +1,5 @@
+#!/bin/sh
+
+mailfolder_base=~/var/mail
+new_folders=$(for dir in `fd Inbox $mailfolder_base`; do fd new $dir; done)
+while read -r line; do ls $line | wc -l; done <<< $new_folders | paste -sd'+' | bc

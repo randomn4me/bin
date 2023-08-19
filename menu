@@ -1,11 +1,1 @@
-#!/bin/bash
-
-source ~/.config/themes/current
-
-height="20"
-font="misc ohsnap:size=7"
-gaps="10"
-
-options="$@"
-
-dmenu $options -i -name "menu" -class "dmenu" -h "$height" -fn "$font" -nb "$COLOR_BASE" -nf "$COLOR_GOLD" -sb "$COLOR_GOLD" -sf "$COLOR_BASE" 2>&1
+../etc/hyprland/bin/menu

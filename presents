@@ -32,10 +32,10 @@ show() {
 [ ! -f $FILE ] && touch $FILE
 
 case $1 in
-	s) show ;;
-  a) add ;;
-	e) vim $FILE ;;
-	h) usage ;;
+	s*) show ;;
+  a*) add ;;
+	e*) vim $FILE ;;
+	h*) usage ;;
 	*) show ;;
 esac
 

@@ -14,12 +14,12 @@ open() {
 		*md|*c|*py|*txt)
 			vim "$1" ;;
 		*png|*jpg|*jpeg|*heic)
-			meh "$1" ;;
+			feh "$1" ;;
 		*pdf)
 			zathura "$1" ;;
 		*mp4|*mkv|*mpv|*mts|*mpg)
 			mpv "$1" ;;
-		*doc|*xls|*ppt|*docx|*xlsx|*pptx)
+		*docm|*docx|*xls|*ppt|*xlsx|*pptx)
 			libreoffice "$1" ;;
 		*) xdg-open "$1" ;;
 	esac

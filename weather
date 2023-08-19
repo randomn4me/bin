@@ -8,7 +8,7 @@ EOF
 
 
 getdata() {
-	curl -s "wttr.in/$1?Q+0"
+	curl -s "wttr.in/$1?Q2F"
 }
 
 test $# -lt 1 && usage && exit 1

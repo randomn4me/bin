@@ -11,4 +11,5 @@ pkill xss-lock &
 pkill xautolock &
 
 pkill bar &
-pkill cwm
+pkill cwm &
+pkill Hyprland &

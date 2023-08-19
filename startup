@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "Hi"
+cat $HOME/etc/r4ndom
+echo ""
+echo "You have $(task status:pending count) open tasks"
+echo "Of which $(task status:pending due.before:tomorrow count) are (over)due"
+echo ""

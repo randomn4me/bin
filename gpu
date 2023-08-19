@@ -1,0 +1,19 @@
+#!/bin/sh
+
+STATUS_FILE=/proc/acpi/bbswitch
+
+status() {
+	STATUS="$(cat $STATUS_FILE | cut -d' ' -f2 | tr [:upper:] [:lower:])"
+	if [[ $STATUS = "off" ]]; then 
+		echo 0
+	else
+		echo 1
+	fi
+}
+
+case $1 in
+	0) echo OFF | sudo tee $STATUS_FILE  ;;
+	1) echo ON | sudo tee $STATUS_FILE  ;;
+	h) echo "Usage: $(basename $0) <0|1|s>" ;;
+	*) status ;;
+esac

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-export WIDTH="$(( $(wattr w `lsw -r`) / 2 ))"
-
-dmenu_open "$HOME/var/zotero/storage" "*.pdf" "paperopen"

@@ -1,0 +1,50 @@
+#!/usr/bin/python
+
+import eyed3
+import os
+
+
+def metadata(dp):
+    audiofile = eyed3.load(dp['filename'])
+    audiofile.tag.artist = dp['artist']
+    audiofile.tag.album = dp['album']
+    audiofile.tag.title = dp['title']
+    audiofile.tag.disc_num = dp['disc']
+    audiofile.tag.track_num = dp['track']
+    audiofile.tag.recording_date = dp['year']
+    audiofile.tag.save()
+
+
+def rename(dp):
+    os.rename(dp["filename"],
+              f'{dp["disc"]}-{dp["track"]:02} - {dp["artist"]} - {dp["title"]}.mp3')
+
+
+files = [f for f in os.listdir() if os.path.isfile(f)]
+data_dict = dict()
+for line in open('data').read().split('\n'):
+    if not line:
+        continue
+
+    year, artist, album, disc, track, title = line.split(',', 5)
+    data_dict[title] = {
+        'year': year,
+        'artist': artist,
+        'album': album,
+        'disc': disc,
+        'track': track,
+        'title': title
+    }
+
+for f in files:
+    for dp in data_dict:
+        if data_dict[dp]['title'] in f:
+            data_dict[dp]['filename'] = f
+            break
+
+for dp in data_dict:
+    try:
+        metadata(data_dict[dp])
+        rename(data_dict[dp])
+    except:
+        data_dict[dp]
